@@ -1,0 +1,70 @@
+
+[
+    {
+        "id": 1,
+        "courseName": "MERN-Stack-Development",
+        "discription": "MERN stack development refers to building web applications using MongoDB (a NoSQL database), Express.js (a web application framework for Node.js), React (a JavaScript library for building user interfaces), and Node.js (a JavaScript runtime environment). This stack allows developers to build scalable and efficient web applications using a single language (JavaScript) across the entire stack. MERN stack development is popular for its flexibility, ease of use, and open-source community support.",
+        "time_commitment": "Weekly meetings and occasional tournaments and daily assignment",
+        "result": 87,
+        "img": "https://i.ibb.co/5LS0nGL/cer1.png"
+    },
+    {
+        "id": 2,
+        "courseName": "Employbility Skills",
+        "discription": "Employability skills are a set of personal qualities, habits, and behaviors that enable individuals to obtain, retain, and advance in a job or career. These skills include communication, teamwork, problem-solving, time management, adaptability, creativity, and a positive attitude. Employability skills are highly valued by employers and are essential for career success, as they can help individuals to effectively perform their job duties, work well with others, and continuously learn and grow in their careers. Employability skills can be developed through education, training, and work experience.",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 87,
+        "img": "https://i.ibb.co/grKryTr/emp.png"
+    },
+    {
+        "id": 3,
+        "courseName": "Chat-GPT",
+        "discription": "ChatGpt is a large language model developed by OpenAI based on the GPT-3.5 architecture. It is designed to understand and generate human-like text in response to natural language input from users. ChatGpt has been trained on a massive dataset of diverse texts and can perform a wide range of tasks, including language translation, question answering, text summarization, and more. ChatGpt has been used in various applications, including chatbots, virtual assistants, and content generation tools, and it continues to evolve and improve as more data and training are added. ",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 87,
+        "img": "https://i.ibb.co/HhfC3M9/gpt.png"
+    },
+    {
+        "id": 4,
+        "courseName": "English-Spoking",
+        "discription": "English-speaking refers to the ability to communicate in the English language. It is a valuable skill in today's globalized world, as English is widely spoken and used as a medium of communication in various fields such as business, education, and technology. Being proficient in English-speaking allows individuals to connect with people from different cultures and backgrounds, expand their opportunities for education and employment, and access a wider range of resources and information. English-speaking skills can be developed through language learning programs, practice, and immersion in English-speaking environments.",
+        "time_commitment": "Weekly meetings and occasional tournaments finaly you have to achieve 50 persent number you got certificate",
+        "result": 60,
+        "img": "https://i.ibb.co/DfzPbYz/diu.png"
+    },
+    {
+        "id": 5,
+        "courseName": "Communication And Interpersonal Skills",
+        "discription": "Communication and interpersonal skills are essential abilities that enable individuals to effectively interact with others in social, personal, and professional contexts. Communication skills involve the ability to convey information clearly and effectively, listen actively, and respond appropriately to feedback. Interpersonal skills, on the other hand, involve the ability to build positive relationships, work collaboratively, resolve conflicts, and empathize with others. Developing these skills can lead to better personal and professional relationships, improved teamwork, and more effective problem-solving. Communication and interpersonal skills can be improved through practice, training, and feedback.",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 60,
+        "img": "https://i.ibb.co/3R13sQY/Feature.png"
+    },
+    {
+        "id": 6,
+        "courseName": "Communication And Interpersonal Skills At Wor",
+        "discription": "Effective communication and interpersonal skills are crucial in the workplace as they promote a positive work environment, increase productivity, and improve employee relationships. Communication skills allow individuals to clearly express ideas, give and receive feedback, and collaborate with others. Interpersonal skills enable individuals to work effectively in teams, build positive relationships, and resolve conflicts. Effective communication and interpersonal skills can lead to better job satisfaction, higher levels of employee engagement, and better business outcomes. Employers can support the development of these skills by providing training and opportunities for practice and feedback.",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 81,
+        "img": "https://i.ibb.co/FYBf8s5/Feature2.png"
+    },
+    {
+        "id": 7,
+        "courseName": "English Making Presentation",
+        "discription": "Making a presentation in English requires effective communication skills and a clear understanding of the topic being presented. It is essential to prepare well in advance, organizing information and visuals in a logical manner. The presentation should be structured with an introduction, body, and conclusion, and should be delivered with clarity, using appropriate language and tone. Nonverbal cues such as eye contact, posture, and hand gestures can also enhance the presentation. Engaging the audience through questions, examples, and stories can increase the impact of the presentation. Practice, preparation, and confidence are key factors in delivering a successful presentation in English.",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 83,
+        "img": "https://i.ibb.co/Gp19Zz7/course.png"
+    },
+    {
+        "id": 8,
+        "courseName": "Programming For Every Body",
+        "discription": "Programming for every body refers to the idea that anyone can learn to code, regardless of their background or level of experience. It involves making programming accessible to everyone by providing resources, tools, and training that cater to different learning styles and abilities. Programming skills are becoming increasingly important in today's digital world, and learning to code can provide individuals with new career opportunities and improve problem-solving and critical thinking skills. Programming for every body initiatives aim to reduce barriers to entry and encourage diversity in the tech industry by promoting inclusive and accessible programming education for all.",
+        "time_commitment": "Quiz tournaments and finaly you have to achieve 80 persent number you got certificate",
+        "result": 89,
+        "img": "https://i.ibb.co/89WNBBY/PROGRAM.png"
+    }
+]
+
+
+

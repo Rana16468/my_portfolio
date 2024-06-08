@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "institution": "Daffodil International University",
+        "semester": "Fall-2019",
+        "cgpa": 3.13
+    },
+    {
+        "id": 2,
+        "institution": "Daffodil International University",
+        "semester": "Spring-2020",
+        "cgpa": 3.66
+    },
+    {
+        "id": 3,
+        "institution": "Daffodil International University",
+        "semester": "Summer-2020",
+        "cgpa": 3.94
+    },
+    {
+        "id": 4,
+        "institution": "Daffodil International University",
+        "semester": "Fall-2020",
+        "cgpa": 3.78
+    },
+    {
+        "id": 5,
+        "institution": "Daffodil International University",
+        "semester": "Spring-2021",
+        "cgpa": 3.94
+    },
+    {
+        "id": 6,
+        "institution": "Daffodil International University",
+        "semester": "Summer-2021",
+        "cgpa": 3.93
+    },
+    {
+        "id": 7,
+        "institution": "Daffodil International University",
+        "semester": "Fall-2021",
+        "cgpa": 3.66
+    },
+    {
+        "id": 8,
+        "institution": "Daffodil International University",
+        "semester": "Spring-2022",
+        "cgpa": 3.82
+    },
+    {
+        "id": 9,
+        "institution": "Daffodil International University",
+        "semester": "Summer-2022",
+        "cgpa": 3.87
+    },
+    {
+        "id": 10,
+        "institution": "Daffodil International University",
+        "semester": "Fall-2022",
+        "cgpa": 3.74
+    },
+    {
+        "id": 11,
+        "institution": "Daffodil International University",
+        "semester": "Spring-2023",
+        "cgpa": 3.75
+    },
+    {
+        "id": 12,
+        "institution": "Daffodil International University",
+        "semester": "Fall-2023",
+        "cgpa": 4
+    }
+]

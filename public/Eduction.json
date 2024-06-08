@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "course": "PSC",
+        "result": 4.50,
+        "secation": "2011",
+        "Institutaion": "AMANTULLAH ISLAMI ACADEMY SCHOOL & COLLEGE",
+        "board": "Primary School Certificate (PSC)"
+    },
+    {
+        "id": 2,
+        "course": "JSC",
+        "result": 4.78,
+        "secation": "2014",
+        "Institutaion": "AMANTULLAH ISLAMI ACADEMY SCHOOL & COLLEGE",
+        "board": "Junior School Certificate (JSC)"
+    },
+    {
+        "id": 3,
+        "course": "SSC",
+        "result": 4.50,
+        "secation": "2016-2017",
+        "board": "Secondary School Certificate (SSC)",
+        "Institutaion": "AMANTULLAH ISLAMI ACADEMY SCHOOL & COLLEGE"
+    },
+    {
+        "id": 4,
+        "course": "HSC",
+        "result": 3.80,
+        "secation": "2018-2019",
+        "Institutaion": "Mokbular Rahman Govt College Panchogarh",
+        "board": "Higher Secondary Certificate (HSC)"
+    },
+    {
+        "id": 5,
+        "course": "Basic Computer training",
+        "result": 5.00,
+        "secation": "2015",
+        "Institutaion": "AppTuch Computer ",
+        "board": "Technical Curriculum Board Dinajpu"
+    },
+    {
+        "id": 6,
+        "course": "Computing And Information System (BSC)",
+        "result": 3.73,
+        "secation": "2019-2023",
+        "Institutaion": "Daffodil International University ",
+        "board": "University Grants Commission It was created according to the Presidential Order (P.O. No 10 of 1973) of the Government of People's Republic of Bangladesh. In 2010 (BSC) "
+    }
+]
