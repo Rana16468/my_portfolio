@@ -1,24 +1,16 @@
-import About from "./components/About";
-import Contact from "./components/Contact";
-import Experience from "./components/Experience";
-import Home from "./components/Home";
-import NavBar from "./components/NavBar";
-import Portfolio from "./components/Portfolio";
-import SocialLinks from "./components/SocialLinks";
 import { Toaster } from "react-hot-toast";
-import Statistic from "./components/Statistic";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider } from "react-router-dom";
+import routes from "./router/RouterProvider";
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <div>
+    <div className="">
       <Toaster />
-      <NavBar />
-      <Home />
-      <About />
-      <Portfolio />
-      <Experience />
-      <Statistic />
-      <Contact />
-      <SocialLinks />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={routes}></RouterProvider>
+      </QueryClientProvider>
     </div>
   );
 }

@@ -12,7 +12,7 @@ const SocialLinks = () => {
           LinkedIn <FaLinkedin size={30} />
         </>
       ),
-      href: "www.linkedin.com/in/a-m-sohel-rana-377050216",
+      href: "https://www.linkedin.com/in/ali-mohammad-sohel-rana-377050216/",
       style: "rounded-tr-md",
     },
     {

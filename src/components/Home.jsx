@@ -1,10 +1,10 @@
 import React from "react";
 // import HeroImage from "../assets/heroImage.png";
 import HeroImage from "../assets/mypic.jpg";
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-
 
 import { ExternalLink } from 'react-external-link';
+
+
 
 
 const Home = () => {
@@ -36,14 +36,16 @@ const Home = () => {
           </div>
 
 
-          <div>
-            <ExternalLink href="https://drive.google.com/file/d/1PJZ6qtXUUGNrWyGjCQxEgZ0U0jFVY-lx/view?usp=sharing" className="group text-white w-fit px-6 py-3 my-2 flex items-center rounded-md bg-gradient-to-r from-cyan-500 to-blue-500 cursor-pointer">
-                Resume
-                <span >
-                  <MdOutlineKeyboardArrowRight size={25} className="ml-1" />
-              </span>
-            </ExternalLink>
-          </div>
+          <div className="text-white m-3">
+      <ExternalLink href="https://drive.google.com/uc?export=download&id=1YH_cldIxcGsUA1XpbLG6O3MMK0hTWnuW">
+        <a
+          href="https://drive.google.com/uc?export=download&id=1YH_cldIxcGsUA1XpbLG6O3MMK0hTWnuW"
+          download="Resume.pdf"
+        >
+          <button className="btn btn-sm bg-blue-900 rounded p-1">Download Resume</button>
+        </a>
+      </ExternalLink>
+    </div>
         </div>
 
         <div  className="lg:ml-11"> 
