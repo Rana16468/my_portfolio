@@ -1,0 +1,111 @@
+.partners-intro--thumb {
+    width: 546px;
+    height: 546px;
+    position: relative;
+}
+
+.partners-intro--partners {
+    width: 100%;
+    height: 100%;
+}
+
+.partners-intro--logo {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 130px;
+    height: 130px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.partners-intro--logo img {
+    display: block;
+    width: 112px
+}
+
+.partners-intro--partners-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 74px;
+    height: 74px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.partners-intro--partners-item.-pos-1 {
+    transform: translate(0, -217%);
+}
+
+.partners-intro--partners-item.-pos-2 {
+    transform: translate(164%, -153%);
+}
+
+.partners-intro--partners-item.-pos-3 {
+    transform: translate(220%, 3%);
+}
+
+.partners-intro--partners-item.-pos-4 {
+    transform: translate(164%, 159%);
+}
+
+.partners-intro--partners-item.-pos-5 {
+    transform: translate(0, 225%);
+}
+
+.partners-intro--partners-item.-pos-6 {
+    transform: translate(-157%, 163%);
+}
+
+.partners-intro--partners-item.-pos-7 {
+    transform: translate(-209%, 3%);
+}
+
+.partners-intro--partners-item.-pos-8 {
+    transform: translate(-157%, -151%);
+}
+
+
+.partners-intro--partners {
+    animation: partnersRotating 30s linear infinite;
+}
+
+.partners-intro--partners-item img {
+    display: block;
+    animation: partnersIconsRotating 30s linear infinite;
+}
+
+@keyframes partnersRotating {
+    from {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(-360deg)
+    }
+}
+
+@keyframes partnersIconsRotating {
+    from {
+        transform: rotate(0)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+}

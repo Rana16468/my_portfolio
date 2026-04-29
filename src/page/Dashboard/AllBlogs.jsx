@@ -186,7 +186,7 @@ const AllBlogs = () => {
                   Title:  {blog.title}
                   </h2>
                   <p className="mt-2 text-gray-400">Topic Name : {blog.subjectname}</p>
-                  <p>{blog.content}</p>
+                  <p className="mt-2 text-gray-300"> <div dangerouslySetInnerHTML={{ __html: blog.content }} /></p>
                   <p className="text-gray-400 text-sm mt-2">
                     {blog.createdAt}
                   </p>

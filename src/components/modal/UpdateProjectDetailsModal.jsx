@@ -197,7 +197,7 @@ const UpdateProjectDetailsModal = ({projectDetailsData,refetch}) => {
         </div>
 
         <button type="submit" className="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Add To Details
+          Update Project Details
         </button>
       </form>
     </div>

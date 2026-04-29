@@ -1,63 +1,381 @@
-import React from "react";
-// import HeroImage from "../assets/heroImage.png";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import HeroImage from "../assets/mypic.jpg";
 
-import { ExternalLink } from 'react-external-link';
+const skillCategories = {
+  frontend: ["React", "Next.js", "TypeScript", "Tailwind", "Redux"],
+  backend: ["Node.js", "NestJS", "GraphQL", "Socket.IO", "Docker", "Express.js", "Prisma"],
+  database: ["PostgreSQL", "MongoDB", "MySQL", "Firebase"],
+  mobile: ["React Native"],
+  testing: ["Mocha", "Chai"],
+  hosting: ["AWS", "Vercel", "Netlify", "Firebase", "Namecheap"],
+};
 
+const highlightedSkills = ["React", "Next.js", "Node.js", "NestJS", "React Native", "TypeScript"];
 
+const styles = `
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
 
+  .port-root {
+    min-height: 100vh;
+    width: 100%;
+    background: #05080f;
+    font-family: 'Outfit', sans-serif;
+    color: #e8eaf0;
+    overflow: hidden;
+    position: relative;
+    padding: 6rem 2rem 4rem;
+  }
+
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .accent-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  .orb1 { width: 350px; height: 350px; background: rgba(56,189,248,.12); top: -100px; right: 10%; }
+  .orb2 { width: 250px; height: 250px; background: rgba(99,102,241,.1); bottom: 80px; left: 5%; }
+
+  .port-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1024px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .port-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(56,189,248,.08);
+    border: 0.5px solid rgba(56,189,248,.25);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: #67e8f9;
+    letter-spacing: .06em;
+    margin-bottom: 1.2rem;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22d3ee;
+    animation: pulseDot 2s infinite;
+  }
+
+  .port-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: #f0f4ff;
+  }
+
+  .port-headline em {
+    font-style: italic;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .port-sub {
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(232,234,240,.6);
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+
+  .skills-grid { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+
+  .skill-row { display: flex; align-items: flex-start; gap: .75rem; }
+
+  .cat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .08em;
+    color: rgba(232,234,240,.35);
+    min-width: 72px;
+    text-align: right;
+    padding-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .tag {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.04);
+    border: 0.5px solid rgba(255,255,255,.1);
+    color: rgba(232,234,240,.7);
+    transition: background .2s, border-color .2s, color .2s;
+    cursor: default;
+  }
+
+  .tag:hover {
+    background: rgba(56,189,248,.1);
+    border-color: rgba(56,189,248,.35);
+    color: #7dd3fc;
+  }
+
+  .tag.hl {
+    background: rgba(56,189,248,.08);
+    border-color: rgba(56,189,248,.2);
+    color: #67e8f9;
+  }
+
+  .port-divider {
+    border: none;
+    border-top: 0.5px solid rgba(255,255,255,.07);
+    margin: 1.5rem 0;
+  }
+
+  .port-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity .2s, transform .15s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .port-cta:hover { opacity: .88; transform: translateY(-1px); }
+
+  .photo-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-top: .5rem;
+  }
+
+  .avatar-wrap { position: relative; width: 170px; height: 170px; }
+
+  .avatar-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #38bdf8, #818cf8, #38bdf8);
+    animation: spinRing 8s linear infinite;
+  }
+
+  .avatar-bg {
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #05080f;
+  }
+
+  .avatar-img-wrap {
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform .5s;
+  }
+
+  .avatar-img:hover { transform: scale(1.05); }
+
+  .stat-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 170px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,.04);
+    border: 0.5px solid rgba(255,255,255,.1);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: #7dd3fc;
+    display: block;
+  }
+
+  .stat-lbl {
+    font-size: 10px;
+    letter-spacing: .05em;
+    color: rgba(232,234,240,.4);
+    display: block;
+    margin-top: 2px;
+  }
+
+  @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:.4} }
+  @keyframes spinRing { to{transform:rotate(360deg)} }
+
+  @media (max-width: 640px) {
+    .port-inner { grid-template-columns: 1fr; }
+    .photo-col { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    .port-root { padding: 5rem 1rem 3rem; }
+  }
+`;
+
+const DownloadIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+);
 
 const Home = () => {
-  
-  // const click = () =>{
-  //   <Resume></Resume>
-  // }
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(true);
+  }, []);
 
   return (
-    <div
-      name="home"
-      className="h-screen w-full bg-gradient-to-b from-black via-black to-gray-800"
-    >
-      <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row">
-        <div className="flex flex-col justify-center h-full">
-          <h2 className="text-4xl sm:text-7xl font-bold text-white">
-            I'm a Full Stack Developer
-          </h2>
-          <p className="text-gray-500 py-4 max-w-md">
-            I have 3.5 years Learning  of experience building and desgining software.
-            Currently, I love to work on web application using technologies like
-            React, Tailwind, Next JS and GraphQL, Postgresql, TypeScript, Material-Ui, Ant Design And Etc .
-          </p>
-          <div className="text-xl font-bold text-gray-500">
-          <p>My Contract Number : 01722305054</p>
-          <p>Email Address : amsr215019@gmail.com</p>
-          <p>OutLook Address : shohelbd2021@outlook.com</p>
+    <>
+      <style>{styles}</style>
+      <div name="home" className="port-root">
+        <div className="grid-bg" />
+        <div className="accent-orb orb1" />
+        <div className="accent-orb orb2" />
 
-          </div>
+        <div className="port-inner">
+          {/* Left column */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : -40 }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="port-badge">
+              <span className="pulse-dot" />
+              available for work
+            </div>
 
+            <h1 className="port-headline">
+              Full Stack<br />
+              <em>Developer</em>
+            </h1>
 
-          <div className="text-white m-3">
-      <ExternalLink href="https://drive.google.com/uc?export=download&id=1YH_cldIxcGsUA1XpbLG6O3MMK0hTWnuW">
-        <a
-          href="https://drive.google.com/uc?export=download&id=1YH_cldIxcGsUA1XpbLG6O3MMK0hTWnuW"
-          download="Resume.pdf"
-        >
-          <button className="btn btn-sm bg-blue-900 rounded p-1">Download Resume</button>
-        </a>
-      </ExternalLink>
-    </div>
-        </div>
+            <p className="port-sub">
+              3.5 years crafting responsive web apps and robust APIs — from
+              pixel-perfect UIs to scalable backend systems.
+            </p>
 
-        <div  className="lg:ml-11"> 
-          <img
-            
-            src={HeroImage}
-            alt="my profile"
-            className="rounded-full"
-          />
+            <div className="skills-grid">
+              {Object.entries(skillCategories).map(([cat, skills], i) => (
+                <motion.div
+                  key={cat}
+                  className="skill-row"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + i * 0.07 }}
+                >
+                  <span className="cat-label">{cat}</span>
+                  <div className="tags">
+                    {skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className={`tag${highlightedSkills.includes(skill) ? " hl" : ""}`}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <hr className="port-divider" />
+
+            <motion.a
+              href="https://drive.google.com/file/d/1RwbGzniiZd69aYBvpLUYeeh4ZtIqPGGE/view?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+              className="port-cta"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <DownloadIcon />
+              Download CV
+            </motion.a>
+          </motion.div>
+
+          {/* Right column — photo + stats */}
+          <motion.div
+            className="photo-col"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : 40 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+          >
+            <div className="avatar-wrap">
+              <div className="avatar-ring" />
+              <div className="avatar-bg" />
+              <div className="avatar-img-wrap">
+                <img src={HeroImage} alt="Profile" className="avatar-img" />
+              </div>
+            </div>
+
+            <div className="stat-cards">
+              <div className="stat-card">
+                <span className="stat-num">3.5</span>
+                <span className="stat-lbl">years exp</span>
+              </div>
+              <div className="stat-card">
+                <span className="stat-num">7+</span>
+                <span className="stat-lbl">stacks</span>
+              </div>
+              <div className="stat-card" style={{ gridColumn: "1 / -1" }}>
+                <span className="stat-num" style={{ fontSize: "13px" }}>TS · JS · Java</span>
+                <span className="stat-lbl">core languages</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
