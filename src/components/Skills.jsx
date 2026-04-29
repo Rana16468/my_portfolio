@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState} from 'react';
 
 const skillCategories = {
   Frontend: ["React Js", "Next.js", "Nuxt Js", "Tailwind CSS", "TypeScript", "Redux", "Java Script"],
@@ -49,16 +49,16 @@ const totalSkills = Object.values(skillCategories).reduce((a, b) => a + b.length
 const totalCategories = Object.keys(skillCategories).length;
 
 /* ─── Orbit positions for up to 8 icons ─────────────────────────── */
-const ORBIT_POSITIONS = [
-  { transform: "translate(-50%, -50%) rotate(0deg) translateY(-110px) rotate(0deg)" },
-  { transform: "translate(-50%, -50%) rotate(45deg) translateY(-110px) rotate(-45deg)" },
-  { transform: "translate(-50%, -50%) rotate(90deg) translateY(-110px) rotate(-90deg)" },
-  { transform: "translate(-50%, -50%) rotate(135deg) translateY(-110px) rotate(-135deg)" },
-  { transform: "translate(-50%, -50%) rotate(180deg) translateY(-110px) rotate(-180deg)" },
-  { transform: "translate(-50%, -50%) rotate(225deg) translateY(-110px) rotate(-225deg)" },
-  { transform: "translate(-50%, -50%) rotate(270deg) translateY(-110px) rotate(-270deg)" },
-  { transform: "translate(-50%, -50%) rotate(315deg) translateY(-110px) rotate(-315deg)" },
-];
+// const ORBIT_POSITIONS = [
+//   { transform: "translate(-50%, -50%) rotate(0deg) translateY(-110px) rotate(0deg)" },
+//   { transform: "translate(-50%, -50%) rotate(45deg) translateY(-110px) rotate(-45deg)" },
+//   { transform: "translate(-50%, -50%) rotate(90deg) translateY(-110px) rotate(-90deg)" },
+//   { transform: "translate(-50%, -50%) rotate(135deg) translateY(-110px) rotate(-135deg)" },
+//   { transform: "translate(-50%, -50%) rotate(180deg) translateY(-110px) rotate(-180deg)" },
+//   { transform: "translate(-50%, -50%) rotate(225deg) translateY(-110px) rotate(-225deg)" },
+//   { transform: "translate(-50%, -50%) rotate(270deg) translateY(-110px) rotate(-270deg)" },
+//   { transform: "translate(-50%, -50%) rotate(315deg) translateY(-110px) rotate(-315deg)" },
+// ];
 
 /* ─── SkillCard ───────────────────────────────────────────────────── */
 const SkillCard = ({ skill, index, visible }) => {
@@ -212,7 +212,7 @@ const OrbitScene = ({ skills }) => {
 
       {/* Orbiting icons */}
       {displayed.map((skill, i) => {
-        const angle = (i / displayed.length) * 360;
+      
         return (
           <div
             key={skill}

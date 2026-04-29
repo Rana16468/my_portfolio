@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
 import ErrorPage from "./ErrorPage";
-import SecondGithubRepo from "./github/SecondGithubRepo";
+
 
 /* ── Inline keyframe styles injected once ── */
 const styles = `
