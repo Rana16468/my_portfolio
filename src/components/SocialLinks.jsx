@@ -1,5 +1,5 @@
 import React from "react";
-import { FaGithub, FaLinkedin, FaQuora } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaQuora, FaTelegram, FaWhatsapp } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
 import { CiFacebook } from "react-icons/ci";
 
@@ -7,80 +7,81 @@ const SocialLinks = () => {
   const links = [
     {
       id: 1,
-      child: (
-        <>
-          LinkedIn <FaLinkedin size={30} />
-        </>
-      ),
+      label: "LinkedIn",
+      icon: <FaLinkedin size={22} />,
       href: "https://www.linkedin.com/in/ali-mohammad-sohel-rana-377050216/",
-      style: "bg-blue-600 rounded-tr-md",
-      hoverColor: "hover:bg-blue-700",
+      style: "from-blue-500 to-blue-700",
     },
     {
       id: 2,
-      child: (
-        <>
-          GitHub <FaGithub size={30} />
-        </>
-      ),
+      label: "GitHub",
+      icon: <FaGithub size={22} />,
       href: "https://github.com/rana16468/",
-      style: "bg-gray-800",
-      hoverColor: "hover:bg-gray-900",
+      style: "from-gray-700 to-black",
     },
     {
       id: 3,
-      child: (
-        <>
-          Mail <HiOutlineMail size={30} />
-        </>
-      ),
-      href: "mailto:rana16-468@diu.edu.bd", // Fixed to include mailto:
-      style: "bg-red-500",
-      hoverColor: "hover:bg-red-600",
+      label: "Email",
+      icon: <HiOutlineMail size={22} />,
+      href: "mailto:rana16-468@diu.edu.bd",
+      style: "from-red-500 to-red-700",
     },
     {
       id: 4,
-      child: (
-        <>
-          Facebook <CiFacebook size={30} />
-        </>
-      ),
+      label: "Facebook",
+      icon: <CiFacebook size={24} />,
       href: "https://www.facebook.com/amsohel.rana.90",
-      style: "bg-blue-500",
-      hoverColor: "hover:bg-blue-600",
+      style: "from-blue-400 to-blue-600",
     },
     {
       id: 5,
-      child: (
-        <>
-          Quora <FaQuora size={30} />
-        </>
-      ),
+      label: "Quora",
+      icon: <FaQuora size={22} />,
       href: "https://www.quora.com/profile/A-M-S-R",
-      style: "bg-red-600 rounded-br-md",
-      hoverColor: "hover:bg-red-700",
-    }
+      style: "from-red-600 to-red-800",
+    },
+
+    {
+      id: 6,
+      label: "WhatsApp",
+      icon: <FaWhatsapp size={22} />,
+      href: "https://wa.me/8801884557649",
+      style: "from-green-500 to-green-700",
+    },
+    {
+      id: 7,
+      label: "Telegram",
+      icon: <FaTelegram size={22} />,
+      href: "https://t.me/8801722305054",
+      style: "from-blue-400 to-blue-600",
+    },
   ];
 
   return (
-    <div className="hidden lg:flex flex-col top-[35%] left-0 fixed z-10">
-      <ul className="shadow-lg">
-        {links.map(({ id, child, href, style, hoverColor }) => (
+    <div className="hidden lg:flex flex-col fixed top-[35%] left-0 z-20">
+      <ul className="space-y-2">
+        {links.map(({ id, label, icon, href, style }) => (
           <li
             key={id}
             className={`
-              flex justify-between items-center w-40 h-14 px-4 ml-[-100px] 
-              hover:ml-[-10px] duration-300 ${style} ${hoverColor}
-              transition-all ease-in-out border-l-4 border-white
+              group flex items-center w-44 h-14 ml-[-110px] hover:ml-0 
+              duration-300 rounded-r-xl shadow-lg
+              bg-gradient-to-r ${style}
             `}
           >
             <a
               href={href}
-              className="flex justify-between items-center w-full text-white font-medium"
               target="_blank"
               rel="noreferrer"
+              className="flex items-center justify-between w-full px-4 text-white"
             >
-              {child}
+              <span className="font-semibold tracking-wide">
+                {label}
+              </span>
+
+              <span className="transition-transform duration-300 group-hover:scale-125">
+                {icon}
+              </span>
             </a>
           </li>
         ))}

@@ -344,35 +344,348 @@ const Home = () => {
           </motion.div>
 
           {/* Right column — photo + stats */}
-          <motion.div
-            className="photo-col"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : 40 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-          >
-            <div className="avatar-wrap">
-              <div className="avatar-ring" />
-              <div className="avatar-bg" />
-              <div className="avatar-img-wrap">
-                <img src={HeroImage} alt="Profile" className="avatar-img" />
-              </div>
-            </div>
+        {/* Right column — photo + stats */}
+<motion.div
+  className="photo-col"
+  initial={{ opacity: 0, x: 40 }}
+  animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : 40 }}
+  transition={{ duration: 0.7, delay: 0.15 }}
+>
+  <style>{`
+    .photo-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+      padding-top: .5rem;
+    }
 
-            <div className="stat-cards">
-              <div className="stat-card">
-                <span className="stat-num">3.5</span>
-                <span className="stat-lbl">years exp</span>
-              </div>
-              <div className="stat-card">
-                <span className="stat-num">7+</span>
-                <span className="stat-lbl">stacks</span>
-              </div>
-              <div className="stat-card" style={{ gridColumn: "1 / -1" }}>
-                <span className="stat-num" style={{ fontSize: "13px" }}>TS · JS · Java</span>
-                <span className="stat-lbl">core languages</span>
-              </div>
-            </div>
-          </motion.div>
+    /* ── Avatar ── */
+    .avatar-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+    }
+
+    /* Soft glow halo behind the ring */
+    .avatar-halo {
+      position: absolute;
+      inset: -18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56,189,248,.22) 0%, transparent 70%);
+      animation: haloPulse 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Conic spinning ring */
+    .avatar-ring {
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #38bdf8 0%, #818cf8 40%, transparent 60%, #38bdf8 100%);
+      animation: spinRing 6s linear infinite;
+    }
+
+    /* Counter-spin second ring for depth */
+    .avatar-ring-2 {
+      position: absolute;
+      inset: -9px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, transparent 60%, rgba(129,140,248,.4) 80%, transparent 100%);
+      animation: spinRing 10s linear infinite reverse;
+    }
+
+    .avatar-bg {
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: #05080f;
+    }
+
+    .avatar-img-wrap {
+      position: absolute;
+      inset: 6px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      transition: transform .6s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .avatar-img:hover { transform: scale(1.07); }
+
+    /* Floating particles */
+    .avatar-particles {
+      position: absolute;
+      inset: -30px;
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: #38bdf8;
+      opacity: 0;
+      animation: floatParticle var(--dur) ease-in-out infinite var(--delay);
+    }
+
+    /* ── Stat cards ── */
+    .stat-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 180px;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .stat-card {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      background: rgba(255,255,255,.03);
+      border: 0.5px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      padding: 12px 10px;
+      text-align: center;
+      transition: border-color .3s, background .3s, transform .3s;
+      cursor: default;
+    }
+
+    .stat-card:hover {
+      background: rgba(56,189,248,.06);
+      border-color: rgba(56,189,248,.3);
+      transform: translateY(-2px);
+    }
+
+    /* Shimmer sweep */
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent);
+      animation: shimmer 4s ease-in-out infinite var(--shimmer-delay, 0s);
+    }
+
+    .stat-card:nth-child(1) { --shimmer-delay: 0s; }
+    .stat-card:nth-child(2) { --shimmer-delay: .8s; }
+
+    .stat-card-wide {
+      position: relative;
+      overflow: hidden;
+      background: rgba(56,189,248,.04);
+      border: 0.5px solid rgba(56,189,248,.15);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: border-color .3s, background .3s, transform .3s;
+      cursor: default;
+    }
+
+    .stat-card-wide:hover {
+      background: rgba(56,189,248,.08);
+      border-color: rgba(56,189,248,.35);
+      transform: translateY(-2px);
+    }
+
+    .stat-card-wide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,.08), transparent);
+      animation: shimmer 4s ease-in-out infinite 1.6s;
+    }
+
+    .stat-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: #7dd3fc;
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      letter-spacing: .06em;
+      color: rgba(232,234,240,.38);
+      display: block;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+
+    .lang-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .lang-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .lang-names {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: #67e8f9;
+      letter-spacing: .04em;
+    }
+
+    .lang-sublbl {
+      font-size: 10px;
+      letter-spacing: .06em;
+      color: rgba(232,234,240,.38);
+      text-transform: uppercase;
+    }
+
+    /* ── Status pill ── */
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,.07);
+      border: 0.5px solid rgba(34,197,94,.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: #86efac;
+      letter-spacing: .05em;
+    }
+
+    .status-blink {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulseDot 1.8s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes haloPulse {
+      0%,100% { opacity: .7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    @keyframes floatParticle {
+      0% { opacity: 0; transform: translateY(0) scale(.5); }
+      20% { opacity: .8; }
+      80% { opacity: .5; }
+      100% { opacity: 0; transform: translateY(calc(var(--rise) * -1px)) translateX(calc(var(--drift) * 1px)) scale(1); }
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      40%,100% { left: 160%; }
+    }
+  `}</style>
+
+  {/* Avatar */}
+  <div className="avatar-wrap">
+    <div className="avatar-halo" />
+    <div className="avatar-ring-2" />
+    <div className="avatar-ring" />
+    <div className="avatar-bg" />
+    <div className="avatar-img-wrap">
+      <img src={HeroImage} alt="Profile" className="avatar-img" />
+    </div>
+
+    {/* Floating particles */}
+    <div className="avatar-particles">
+      {[
+        { size: 3, top: "10%", left: "80%", dur: "3.2s", delay: "0s",  rise: 60, drift: -10 },
+        { size: 2, top: "25%", left: "5%",  dur: "4s",   delay: ".5s", rise: 50, drift: 8  },
+        { size: 4, top: "70%", left: "88%", dur: "3.6s", delay: "1s",  rise: 55, drift: -5 },
+        { size: 2, top: "85%", left: "15%", dur: "5s",   delay: "1.8s",rise: 65, drift: 12 },
+        { size: 3, top: "50%", left: "95%", dur: "2.8s", delay: "2.2s",rise: 45, drift: -8 },
+        { size: 2, top: "5%",  left: "40%", dur: "4.4s", delay: ".9s", rise: 70, drift: 6  },
+      ].map((p, i) => (
+        <span
+          key={i}
+          className="particle"
+          style={{
+            width: p.size, height: p.size,
+            top: p.top, left: p.left,
+            "--dur": p.dur, "--delay": p.delay,
+            "--rise": p.rise, "--drift": p.drift,
+          }}
+        />
+      ))}
+    </div>
+  </div>
+
+  {/* Stats */}
+  <div className="stat-cards">
+    <div className="stat-row">
+      <motion.div
+        className="stat-card"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <span className="stat-num">3.5</span>
+        <span className="stat-lbl">yrs exp</span>
+      </motion.div>
+      <motion.div
+        className="stat-card"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        <span className="stat-num">7+</span>
+        <span className="stat-lbl">stacks</span>
+      </motion.div>
+    </div>
+
+    <motion.div
+      className="stat-card-wide"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.7 }}
+    >
+      <div>
+        <span className="lang-names">TS · JS · Java</span>
+        <span className="lang-sublbl">core languages</span>
+      </div>
+      <div className="lang-dots">
+        <span className="lang-dot" style={{ background: "#3178c6" }} />
+        <span className="lang-dot" style={{ background: "#f7df1e" }} />
+        <span className="lang-dot" style={{ background: "#f89820" }} />
+      </div>
+    </motion.div>
+  </div>
+
+  {/* Status pill */}
+  <motion.div
+    className="status-pill"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: 0.85, type: "spring", stiffness: 200 }}
+  >
+    <span className="status-blink" />
+    open to opportunities
+  </motion.div>
+</motion.div>
         </div>
       </div>
     </>

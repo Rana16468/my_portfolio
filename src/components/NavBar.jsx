@@ -3,16 +3,9 @@ import { Link } from "react-scroll";
 
 const NavBar = () => {
   const [nav, setNav] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const navRef = useRef(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -59,9 +52,7 @@ const NavBar = () => {
           --border: rgba(0, 245, 212, 0.15);
         }
 
-        .navbar-root {
-          font-family: 'Syne', sans-serif;
-        }
+        .navbar-root { font-family: 'Syne', sans-serif; }
 
         .navbar-glass {
           background: var(--nav-bg);
@@ -136,21 +127,10 @@ const NavBar = () => {
           transform-origin: left;
         }
 
-        .nav-item:hover {
-          color: var(--text);
-        }
-
-        .nav-item:hover::after {
-          transform: scaleX(1);
-        }
-
-        .nav-item.active {
-          color: var(--accent);
-        }
-
-        .nav-item.active::after {
-          transform: scaleX(1);
-        }
+        .nav-item:hover { color: var(--text); }
+        .nav-item:hover::after { transform: scaleX(1); }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active::after { transform: scaleX(1); }
 
         .nav-icon {
           font-size: 0.7rem;
@@ -159,9 +139,7 @@ const NavBar = () => {
         }
 
         .nav-item:hover .nav-icon,
-        .nav-item.active .nav-icon {
-          opacity: 1;
-        }
+        .nav-item.active .nav-icon { opacity: 1; }
 
         .logo-dot {
           width: 6px;
@@ -179,7 +157,6 @@ const NavBar = () => {
           50% { opacity: 0.4; transform: scale(0.7); }
         }
 
-        /* Pill wrapper for desktop nav */
         .nav-pill {
           background: rgba(255,255,255,0.03);
           border: 1px solid var(--border);
@@ -190,7 +167,6 @@ const NavBar = () => {
           gap: 2px;
         }
 
-        /* Hamburger */
         .ham-btn {
           width: 40px;
           height: 40px;
@@ -222,25 +198,13 @@ const NavBar = () => {
         .ham-line-2 { width: 14px; }
         .ham-line-3 { width: 20px; }
 
-        .ham-btn.open .ham-line-1 {
-          transform: translateY(6.5px) rotate(45deg);
-          width: 20px;
-        }
-        .ham-btn.open .ham-line-2 {
-          opacity: 0;
-          width: 0;
-        }
-        .ham-btn.open .ham-line-3 {
-          transform: translateY(-6.5px) rotate(-45deg);
-          width: 20px;
-        }
+        .ham-btn.open .ham-line-1 { transform: translateY(6.5px) rotate(45deg); width: 20px; }
+        .ham-btn.open .ham-line-2 { opacity: 0; width: 0; }
+        .ham-btn.open .ham-line-3 { transform: translateY(-6.5px) rotate(-45deg); width: 20px; }
 
-        /* Mobile drawer */
         .mobile-drawer {
           position: fixed;
-          top: 0;
-          right: 0;
-          bottom: 0;
+          top: 0; right: 0; bottom: 0;
           width: min(320px, 85vw);
           background: rgba(4, 4, 12, 0.98);
           backdrop-filter: blur(40px);
@@ -253,9 +217,7 @@ const NavBar = () => {
           padding: 80px 40px 60px;
         }
 
-        .mobile-drawer.open {
-          transform: translateX(0);
-        }
+        .mobile-drawer.open { transform: translateX(0); }
 
         .mobile-overlay {
           position: fixed;
@@ -268,10 +230,7 @@ const NavBar = () => {
           transition: opacity 0.4s ease;
         }
 
-        .mobile-overlay.open {
-          opacity: 1;
-          pointer-events: auto;
-        }
+        .mobile-overlay.open { opacity: 1; pointer-events: auto; }
 
         .mobile-nav-item {
           display: flex;
@@ -296,9 +255,7 @@ const NavBar = () => {
           transition: color 0.25s;
         }
 
-        .mobile-nav-item:hover .mobile-nav-icon {
-          color: var(--accent);
-        }
+        .mobile-nav-item:hover .mobile-nav-icon { color: var(--accent); }
 
         .mobile-nav-label {
           font-family: 'Syne', sans-serif;
@@ -318,10 +275,8 @@ const NavBar = () => {
 
         .drawer-close {
           position: absolute;
-          top: 24px;
-          right: 24px;
-          width: 36px;
-          height: 36px;
+          top: 24px; right: 24px;
+          width: 36px; height: 36px;
           border: 1px solid var(--border);
           border-radius: 8px;
           background: transparent;
@@ -334,10 +289,7 @@ const NavBar = () => {
           transition: border-color 0.2s, color 0.2s;
         }
 
-        .drawer-close:hover {
-          border-color: var(--accent2);
-          color: var(--accent2);
-        }
+        .drawer-close:hover { border-color: var(--accent2); color: var(--accent2); }
 
         .drawer-footer {
           margin-top: auto;
@@ -354,8 +306,7 @@ const NavBar = () => {
         }
 
         .status-dot {
-          width: 5px;
-          height: 5px;
+          width: 5px; height: 5px;
           background: var(--accent);
           border-radius: 50%;
           display: inline-block;
@@ -368,21 +319,21 @@ const NavBar = () => {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .nav-animate {
-          animation: fade-in-down 0.5s ease both;
+        .nav-animate { animation: fade-in-down 0.5s ease both; }
+
+        @media (min-width: 768px) {
+          #desktop-nav { display: flex !important; }
+          .ham-btn { display: none !important; }
         }
       `}</style>
 
       <div className="navbar-root">
-        {/* Main Navbar */}
         <div
           ref={navRef}
           className="navbar-container navbar-glass nav-animate"
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 0, left: 0, right: 0,
             zIndex: 50,
             height: "70px",
             display: "flex",
@@ -454,12 +405,7 @@ const NavBar = () => {
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {links.map(({ id, link, icon }) => (
               <li key={id}>
-                <Link
-                  to={link}
-                  smooth
-                  duration={500}
-                  onClick={() => setNav(false)}
-                >
+                <Link to={link} smooth duration={500} onClick={() => setNav(false)}>
                   <div className="mobile-nav-item">
                     <span className="mobile-nav-icon">{icon}</span>
                     <span className="mobile-nav-label">{link.replace("-", " ")}</span>
@@ -476,18 +422,10 @@ const NavBar = () => {
               Available for work
             </p>
             <p className="logo-text" style={{ fontSize: "0.95rem", marginTop: "8px" }}>
-              A M Sohel Rana 
+              A M Sohel Rana
             </p>
           </div>
         </div>
-
-        {/* Inline style for desktop nav visibility */}
-        <style>{`
-          @media (min-width: 768px) {
-            #desktop-nav { display: flex !important; }
-            .ham-btn { display: none !important; }
-          }
-        `}</style>
       </div>
     </>
   );
