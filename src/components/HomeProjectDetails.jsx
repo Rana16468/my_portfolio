@@ -204,11 +204,22 @@ const styles = `
 /* ─── helper: split comma-separated tech into pills ─── */
 const TechPills = ({ value }) => {
   if (!value) return null;
-  const items = value.split(/[,;\/]/).map(s => s.trim()).filter(Boolean);
-  if (items.length <= 1) return <span className="text-block-content">{value}</span>;
+
+  const items = value
+    .split(/[,;/]/)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (items.length <= 1)
+    return <span className="text-block-content">{value}</span>;
+
   return (
     <div className="tech-row">
-      {items.map((t, i) => <span key={i} className="tech-pill">{t}</span>)}
+      {items.map((t, i) => (
+        <span key={i} className="tech-pill">
+          {t}
+        </span>
+      ))}
     </div>
   );
 };
