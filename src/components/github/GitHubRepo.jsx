@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// ── Language color map ───────────────────────────────────────────────────────
 const LANG_COLORS = {
   Python: '#3572A5', TypeScript: '#2b7489', JavaScript: '#f1e05a',
   HTML: '#e34c26', CSS: '#563d7c', Shell: '#89e051', Kotlin: '#A97BFF',
@@ -13,7 +12,6 @@ const GH_COLORS = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const GITHUB_USER = 'Rana16468';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 function fmtDate(d) {
   if (!d) return 'N/A';
   return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -27,18 +25,17 @@ function seededRandom(seed) {
   };
 }
 
-// ── Daily Commit Graph for a given year ─────────────────────────────────────
 function DailyCommitGraph({ year, repoCount }) {
   const jan1 = new Date(year, 0, 1);
   const dec31 = new Date(year, 11, 31);
-  const startOffset = jan1.getDay(); // 0=Sun
+  const startOffset = jan1.getDay();
   const totalDays = Math.floor((dec31 - jan1) / 86400000) + 1;
   const totalCells = startOffset + totalDays;
   const cols = Math.ceil(totalCells / 7);
 
   const rng = seededRandom(year * 137 + repoCount * 31);
   const levels = Array.from({ length: totalCells }, (_, i) => {
-    if (i < startOffset) return -1; // empty padding
+    if (i < startOffset) return -1;
     const r = rng();
     let lvl = 0;
     if (r > 0.40) lvl = 1;
@@ -48,7 +45,6 @@ function DailyCommitGraph({ year, repoCount }) {
     return lvl;
   });
 
-  // Month label positions (col index for each month start)
   const monthLabels = [];
   for (let m = 0; m < 12; m++) {
     const d = new Date(year, m, 1);
@@ -67,7 +63,6 @@ function DailyCommitGraph({ year, repoCount }) {
   return (
     <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <div style={{ minWidth: 'max-content' }}>
-        {/* Month labels */}
         <div style={{ position: 'relative', height: 16, marginBottom: 4, minWidth: svgWidth }}>
           {monthLabels.map(({ label, col }) => (
             <span key={label} style={{
@@ -76,7 +71,6 @@ function DailyCommitGraph({ year, repoCount }) {
             }}>{label}</span>
           ))}
         </div>
-        {/* Grid */}
         <svg width={svgWidth} height={svgHeight} style={{ display: 'block' }}>
           {levels.map((lvl, i) => {
             if (lvl === -1) return null;
@@ -88,19 +82,13 @@ function DailyCommitGraph({ year, repoCount }) {
             const date = new Date(year, 0, 1 + dayIndex);
             const label = `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${lvl} commit${lvl !== 1 ? 's' : ''}`;
             return (
-              <rect
-                key={i} x={x} y={y}
-                width={cellSize} height={cellSize} rx={2}
-                fill={GH_COLORS[lvl]}
-                stroke={lvl === 0 ? '#21262d' : 'none'}
-                strokeWidth={1}
-              >
+              <rect key={i} x={x} y={y} width={cellSize} height={cellSize} rx={2} fill={GH_COLORS[lvl]}
+                stroke={lvl === 0 ? '#21262d' : 'none'} strokeWidth={1}>
                 <title>{label}</title>
               </rect>
             );
           })}
         </svg>
-        {/* Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 8, justifyContent: 'flex-end', fontSize: 10, color: '#8b949e' }}>
           <span>Less</span>
           {GH_COLORS.map((c, i) => (
@@ -113,7 +101,6 @@ function DailyCommitGraph({ year, repoCount }) {
   );
 }
 
-// ── Language Bar ─────────────────────────────────────────────────────────────
 function LanguageBar({ langStats }) {
   if (!langStats.length) return <span style={{ color: '#8b949e', fontSize: 11 }}>No data</span>;
   return (
@@ -136,7 +123,6 @@ function LanguageBar({ langStats }) {
   );
 }
 
-// ── Sidebar Card ─────────────────────────────────────────────────────────────
 function SideCard({ title, children }) {
   return (
     <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 14px', marginBottom: 12 }}>
@@ -146,7 +132,6 @@ function SideCard({ title, children }) {
   );
 }
 
-// ── Repo Card ────────────────────────────────────────────────────────────────
 function RepoCard({ repo }) {
   const [hovered, setHovered] = useState(false);
   const lc = LANG_COLORS[repo.language] || '#888';
@@ -195,7 +180,7 @@ function RepoCard({ repo }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 12, fontSize: 11, color: '#8b949e' }}>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, fontSize: 11, color: '#8b949e' }}>
         {repo.language && (
           <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 9, height: 9, borderRadius: '50%', background: lc, display: 'inline-block' }} />
@@ -214,7 +199,6 @@ function RepoCard({ repo }) {
   );
 }
 
-// ── Loading ──────────────────────────────────────────────────────────────────
 function LoadingSpinner() {
   return (
     <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
@@ -225,7 +209,6 @@ function LoadingSpinner() {
   );
 }
 
-// ── Error ────────────────────────────────────────────────────────────────────
 function ErrorPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
@@ -236,16 +219,14 @@ function ErrorPage() {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
 export default function GitHubRepo() {
   const [repos, setRepos] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Filters
   const [selectedYear, setSelectedYear] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(null); // 0-11 or null
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState('repositories');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -264,7 +245,6 @@ export default function GitHubRepo() {
         const repoList = Array.isArray(reposData) ? reposData : [];
         setRepos(repoList);
         setProfile(profileData);
-        // Default to most recent year
         const years = [...new Set(repoList.map(r => new Date(r.created_at).getFullYear()))].sort((a, b) => b - a);
         if (years.length) setSelectedYear(years[0]);
       } catch {
@@ -283,15 +263,12 @@ export default function GitHubRepo() {
   if (loading) return <LoadingSpinner />;
   if (error || !profile) return <ErrorPage />;
 
-  // ── Derived data ──────────────────────────────────────────────────────────
   const years = [...new Set(repos.map(r => new Date(r.created_at).getFullYear()))].sort((a, b) => b - a);
 
-  // All months that have repos in selected year
   const monthsInYear = selectedYear
     ? [...new Set(repos.filter(r => new Date(r.created_at).getFullYear() === selectedYear).map(r => new Date(r.created_at).getMonth()))].sort((a, b) => a - b)
     : [];
 
-  // Filtered repos
   let filtered = repos;
   if (selectedYear) filtered = filtered.filter(r => new Date(r.created_at).getFullYear() === selectedYear);
   if (selectedMonth !== null) filtered = filtered.filter(r => new Date(r.created_at).getMonth() === selectedMonth);
@@ -300,12 +277,10 @@ export default function GitHubRepo() {
   const safePage = Math.min(page, totalPages);
   const currentRepos = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
 
-  // Stats
   const totalStars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
   const totalForks = repos.reduce((s, r) => s + (r.forks_count || 0), 0);
   const totalIssues = repos.reduce((s, r) => s + (r.open_issues_count || 0), 0);
 
-  // Language stats (across all repos)
   const langCounts = {};
   repos.forEach(r => { if (r.language) langCounts[r.language] = (langCounts[r.language] || 0) + 1; });
   const langTotal = Object.values(langCounts).reduce((a, b) => a + b, 0);
@@ -316,14 +291,12 @@ export default function GitHubRepo() {
   const memberYear = profile.created_at ? new Date(profile.created_at).getFullYear() : '';
   const tabs = ['overview', 'repositories', 'projects', 'packages', 'stars'];
 
-  // Year repo counts
   const repoCountByYear = {};
   repos.forEach(r => {
     const y = new Date(r.created_at).getFullYear();
     repoCountByYear[y] = (repoCountByYear[y] || 0) + 1;
   });
 
-  // Month repo counts for selected year
   const repoCountByMonth = {};
   if (selectedYear) {
     repos.filter(r => new Date(r.created_at).getFullYear() === selectedYear).forEach(r => {
@@ -338,42 +311,113 @@ export default function GitHubRepo() {
     <div style={{ minHeight: '100vh', background: '#0d1117', color: '#e6edf3', fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       <style>{`
         *{box-sizing:border-box}
+
+        /* ── Year/Month buttons ── */
         .yr-btn{background:#161b22;border:1px solid #21262d;color:#8b949e;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s;white-space:nowrap}
         .yr-btn.active{background:#1f6feb;border-color:#388bfd;color:#fff;font-weight:600}
         .yr-btn:hover:not(.active){border-color:#8b949e;color:#e6edf3}
         .mo-btn{background:#161b22;border:1px solid #21262d;color:#8b949e;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s;white-space:nowrap}
         .mo-btn.active{background:#1f6feb;border-color:#388bfd;color:#fff;font-weight:600}
         .mo-btn:hover:not(.active){border-color:#8b949e;color:#e6edf3}
+
+        /* ── Pagination ── */
         .pg-btn{width:34px;height:34px;border-radius:7px;border:1px solid #21262d;background:#161b22;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#58a6ff;transition:background .15s}
         .pg-btn:disabled{color:#484f58;cursor:not-allowed}
         .pg-btn:not(:disabled):hover{background:#21262d}
         .pg-num{width:34px;height:34px;border-radius:7px;border:1px solid #21262d;background:#161b22;color:#c9d1d9;cursor:pointer;font-size:13px;font-family:inherit;transition:background .15s}
         .pg-num:hover:not(.active){background:#21262d}
         .pg-num.active{background:#1f6feb;color:#fff;font-weight:700;border-color:#388bfd}
-        .gh-tab{padding:12px 16px;background:none;border:none;border-bottom:2px solid transparent;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;transition:color .2s;font-family:inherit}
+
+        /* ── Tabs ── */
+        .gh-tab{padding:10px 12px;background:none;border:none;border-bottom:2px solid transparent;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;transition:color .2s;font-family:inherit}
         .gh-tab.active{border-bottom-color:#fd8c73;color:#e6edf3}
         .gh-tab:hover:not(.active){color:#e6edf3}
+
+        /* ── Nav links ── */
         .nav-link{background:none;border:none;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:inherit;transition:color .15s}
         .nav-link:hover{color:#e6edf3}
-        .stat-pill{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex:1;min-width:90px}
-        .sidebar-wrap{display:flex;flex-direction:column;gap:0}
+
+        /* ── Stats bar pill ── */
+        .stat-pill{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:7px}
+
+        /* ── Footer links ── */
+        .footer-link{color:#8b949e;text-decoration:none;font-size:12px;transition:color .15s}
+        .footer-link:hover{color:#58a6ff}
+
+        /* ── RESPONSIVE ── */
+
+        /* Desktop: sidebar left, content right */
+        .main-grid{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:start}
+
+        /* Stats: 3 columns on desktop, wrap naturally */
+        .stats-bar{display:flex;flex-wrap:wrap;gap:8px}
+        .stat-pill{flex:1;min-width:100px}
+
+        /* Profile hero */
+        .profile-hero{display:flex;gap:18px;align-items:flex-start}
+        .profile-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+
+        /* Sidebar stacks normally on desktop */
+        .sidebar-inner{display:flex;flex-direction:column;gap:0}
+
+        /* Nav desktop */
+        .nav-desktop{display:flex;gap:22px}
+        .hamburger-btn{display:none;background:none;border:none;cursor:pointer;color:#8b949e;padding:4px;align-items:center}
+        .mobile-menu{display:none;flex-direction:column;background:#161b22;border-top:1px solid #21262d;padding:6px 0}
+
+        /* Pagination wrapper */
+        .pagination-wrap{display:flex;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap;margin-top:20px}
+
+        /* ── Tablet (≤860px): collapse sidebar below content ── */
         @media(max-width:860px){
-          .main-grid{grid-template-columns:1fr!important}
-          .sidebar-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-          .sidebar-wrap > div{margin-bottom:0!important}
+          .main-grid{grid-template-columns:1fr}
+          .sidebar-inner{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+          .sidebar-inner > div{margin-bottom:0!important}
         }
-        @media(max-width:540px){
-          .sidebar-wrap{grid-template-columns:1fr}
-          .nav-desktop{display:none!important}
-          .hamburger{display:flex!important}
+
+        /* ── Mobile (≤600px) ── */
+        @media(max-width:600px){
+          /* Sidebar: single column */
+          .sidebar-inner{grid-template-columns:1fr}
+
+          /* Nav: hide desktop links, show hamburger */
+          .nav-desktop{display:none}
+          .hamburger-btn{display:flex}
+
+          /* Profile: stack vertically, center */
           .profile-hero{flex-direction:column;align-items:center;text-align:center}
-          .profile-meta{justify-content:center!important}
-          .stats-bar{flex-wrap:wrap}
-          .stats-bar .stat-pill{flex:1 1 42%}
+          .profile-meta{justify-content:center}
+
+          /* Stats: 2 cols */
+          .stats-bar{display:grid;grid-template-columns:repeat(2,1fr)}
+          .stat-pill{min-width:unset}
+
+          /* Tabs: allow horizontal scroll, tighten padding */
+          .tabs-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+          .tabs-scroll::-webkit-scrollbar{display:none}
+          .gh-tab{padding:10px 10px;font-size:12px}
+
+          /* Year filter: allow horizontal scroll on small phones */
+          .year-filter-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+          .year-filter-scroll::-webkit-scrollbar{display:none}
+
+          /* Pagination: smaller buttons */
+          .pg-btn,.pg-num{width:30px;height:30px;font-size:12px}
+
+          /* Repo card: tighten padding */
+          .repo-card-inner{padding:12px 12px!important}
+
+          /* Footer: stack vertically */
+          .footer-inner{flex-direction:column;align-items:center;gap:10px;text-align:center}
+          .footer-links{justify-content:center}
         }
-        @media(min-width:541px){
-          .hamburger{display:none!important}
-          .mobile-menu{display:none!important}
+
+        /* ── Very small phones (≤380px) ── */
+        @media(max-width:380px){
+          .stats-bar{grid-template-columns:repeat(2,1fr)}
+          .gh-tab{padding:8px 8px;font-size:11px}
+          .yr-btn{padding:4px 8px;font-size:11px}
+          .profile-hero img{width:64px!important;height:64px!important}
         }
       `}</style>
 
@@ -386,25 +430,23 @@ export default function GitHubRepo() {
             </svg>
             <span style={{ fontSize: 16, fontWeight: 700 }}>GitHub</span>
           </div>
-          <nav className="nav-desktop" style={{ display: 'flex', gap: 22 }}>
+          <nav className="nav-desktop">
             {['Pull requests', 'Issues', 'Marketplace', 'Explore'].map(item => (
               <button key={item} className="nav-link">{item}</button>
             ))}
           </nav>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button className="hamburger" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8b949e', padding: 4, display: 'none', alignItems: 'center' }}
-              onClick={() => setMobileNavOpen(o => !o)}>
+            <button className="hamburger-btn" onClick={() => setMobileNavOpen(o => !o)}>
               {mobileNavOpen
-                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
               }
             </button>
             <img src={profile.avatar_url} alt={profile.login} style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid #21262d', objectFit: 'cover' }} />
           </div>
         </div>
-        {/* Mobile nav */}
         {mobileNavOpen && (
-          <div className="mobile-menu" style={{ display: 'flex', flexDirection: 'column', background: '#161b22', borderTop: '1px solid #21262d', padding: '6px 0' }}>
+          <div className="mobile-menu" style={{ display: 'flex' }}>
             {['Pull requests', 'Issues', 'Marketplace', 'Explore'].map(item => (
               <button key={item} style={{ background: 'none', border: 'none', color: '#8b949e', textAlign: 'left', padding: '10px 20px', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>{item}</button>
             ))}
@@ -415,7 +457,7 @@ export default function GitHubRepo() {
       {/* ── Profile Hero ── */}
       <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', padding: '22px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="profile-hero" style={{ display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+          <div className="profile-hero">
             <div style={{ position: 'relative', flexShrink: 0 }}>
               <img src={profile.avatar_url} alt={profile.name || profile.login}
                 style={{ width: 80, height: 80, borderRadius: '50%', border: '3px solid #21262d', objectFit: 'cover', display: 'block' }} />
@@ -425,7 +467,7 @@ export default function GitHubRepo() {
               <div style={{ fontSize: 20, fontWeight: 700 }}>{profile.name || profile.login}</div>
               <div style={{ fontSize: 13, color: '#8b949e', fontFamily: 'monospace', margin: '2px 0 6px' }}>@{profile.login}</div>
               {profile.bio && <div style={{ fontSize: 12, color: '#8b949e', lineHeight: 1.6, maxWidth: 480 }}>{profile.bio}</div>}
-              <div className="profile-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginTop: 8 }}>
+              <div className="profile-meta">
                 {profile.location && <span style={{ fontSize: 11, color: '#8b949e' }}>📍 {profile.location}</span>}
                 {memberYear && <span style={{ fontSize: 11, color: '#8b949e' }}>📅 Joined {memberYear}</span>}
                 <span style={{ fontSize: 11, color: '#8b949e' }}>📦 {repos.length} repos</span>
@@ -442,51 +484,52 @@ export default function GitHubRepo() {
 
       {/* ── Stats Bar ── */}
       <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', padding: '10px 16px' }}>
-        <div className="stats-bar" style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {[
-            { icon: '▣', label: 'Repos', value: repos.length, color: '#2ea043' },
-            { icon: '★', label: 'Stars', value: totalStars, color: '#d29922' },
-            { icon: '⑂', label: 'Forks', value: totalForks, color: '#58a6ff' },
-            { icon: '!', label: 'Issues', value: totalIssues, color: '#fd8c73' },
-            { icon: '<>', label: 'Languages', value: langStats.length, color: '#bc8cff' },
-            { icon: '◎', label: 'Followers', value: profile.followers, color: '#39d353' },
-          ].map(s => (
-            <div key={s.label} className="stat-pill">
-              <span style={{ fontSize: 14, color: s.color, flexShrink: 0 }}>{s.icon}</span>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: s.color, fontFamily: 'monospace', lineHeight: 1 }}>{s.value}</div>
-                <div style={{ fontSize: 9, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 1 }}>{s.label}</div>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div className="stats-bar">
+            {[
+              { icon: '▣', label: 'Repos', value: repos.length, color: '#2ea043' },
+              { icon: '★', label: 'Stars', value: totalStars, color: '#d29922' },
+              { icon: '⑂', label: 'Forks', value: totalForks, color: '#58a6ff' },
+              { icon: '!', label: 'Issues', value: totalIssues, color: '#fd8c73' },
+              { icon: '<>', label: 'Languages', value: langStats.length, color: '#bc8cff' },
+              { icon: '◎', label: 'Followers', value: profile.followers, color: '#39d353' },
+            ].map(s => (
+              <div key={s.label} className="stat-pill">
+                <span style={{ fontSize: 14, color: s.color, flexShrink: 0 }}>{s.icon}</span>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: s.color, fontFamily: 'monospace', lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontSize: 9, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 1 }}>{s.label}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ── Tabs ── */}
-      <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', overflowX: 'auto' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px', display: 'flex' }}>
-          {tabs.map(tab => (
-            <button key={tab} className={`gh-tab${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}>
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+      <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
+          <div className="tabs-scroll" style={{ display: 'flex' }}>
+            {tabs.map(tab => (
+              <button key={tab} className={`gh-tab${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* ── Main Grid ── */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '18px 16px 40px' }}>
-        <div className="main-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 18, alignItems: 'start' }}>
+        <div className="main-grid">
 
           {/* ── Sidebar ── */}
           <aside>
-            <div className="sidebar-wrap">
-
-              {/* Languages */}
+            <div className="sidebar-inner">
               <SideCard title="Most Used Languages">
                 <LanguageBar langStats={langStats} />
               </SideCard>
 
-              {/* Quick Stats */}
               <SideCard title="Quick Stats">
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                   {[
@@ -505,7 +548,6 @@ export default function GitHubRepo() {
                 </div>
               </SideCard>
 
-              {/* Streak */}
               <SideCard title="Streak Info">
                 <div style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 7, padding: '10px 8px', textAlign: 'center', marginBottom: 6 }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: '#fd8c73', fontFamily: 'monospace' }}>🔥 N/A</div>
@@ -519,14 +561,12 @@ export default function GitHubRepo() {
                 </div>
                 <div style={{ fontSize: 9, color: '#484f58', marginTop: 6, textAlign: 'center', lineHeight: 1.4 }}>Auth required — not available via public API.</div>
               </SideCard>
-
             </div>
           </aside>
 
           {/* ── Main Content ── */}
           <main>
-
-            {/* ── Daily Commit Graph ── */}
+            {/* Daily Commit Graph */}
             <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 }}>
                 <span style={{ fontSize: 13, color: '#8b949e' }}>
@@ -538,31 +578,35 @@ export default function GitHubRepo() {
               <DailyCommitGraph year={graphYear} repoCount={repos.length} />
             </div>
 
-            {/* ── Year Filter ── */}
+            {/* Year Filter */}
             <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 14px', marginBottom: 16 }}>
               <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Filter by Year
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                <button className={`yr-btn${!selectedYear ? ' active' : ''}`} onClick={() => { setSelectedYear(null); setSelectedMonth(null); setPage(1); }}>
-                  All <span style={{ fontSize: 10, color: !selectedYear ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repos.length})</span>
-                </button>
-                {years.map(y => (
-                  <button key={y} className={`yr-btn${selectedYear === y ? ' active' : ''}`}
-                    onClick={() => { setSelectedYear(y); setSelectedMonth(null); setPage(1); }}>
-                    {y} <span style={{ fontSize: 10, color: selectedYear === y ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repoCountByYear[y] || 0})</span>
+              <div className="year-filter-scroll">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <button className={`yr-btn${!selectedYear ? ' active' : ''}`}
+                    onClick={() => { setSelectedYear(null); setSelectedMonth(null); setPage(1); }}>
+                    All <span style={{ fontSize: 10, color: !selectedYear ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repos.length})</span>
                   </button>
-                ))}
+                  {years.map(y => (
+                    <button key={y} className={`yr-btn${selectedYear === y ? ' active' : ''}`}
+                      onClick={() => { setSelectedYear(y); setSelectedMonth(null); setPage(1); }}>
+                      {y} <span style={{ fontSize: 10, color: selectedYear === y ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repoCountByYear[y] || 0})</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* ── Month Filter (only when a year is selected) ── */}
+              {/* Month Filter */}
               {selectedYear && monthsInYear.length > 0 && (
                 <div style={{ marginTop: 10 }}>
                   <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Filter by Month — {selectedYear}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                    <button className={`mo-btn${selectedMonth === null ? ' active' : ''}`} onClick={() => { setSelectedMonth(null); setPage(1); }}>
+                    <button className={`mo-btn${selectedMonth === null ? ' active' : ''}`}
+                      onClick={() => { setSelectedMonth(null); setPage(1); }}>
                       All
                     </button>
                     {monthsInYear.map(m => (
@@ -576,7 +620,7 @@ export default function GitHubRepo() {
               )}
             </div>
 
-            {/* ── Repo List Header ── */}
+            {/* Repo List Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 600 }}>
                 {selectedYear ? `${selectedYear}${selectedMonth !== null ? ` — ${MONTHS_SHORT[selectedMonth]}` : ''} Repositories` : 'All Repositories'}
@@ -587,7 +631,7 @@ export default function GitHubRepo() {
               </span>
             </div>
 
-            {/* ── Repo Cards ── */}
+            {/* Repo Cards */}
             <div style={{ display: 'grid', gap: 12 }}>
               {currentRepos.length > 0
                 ? currentRepos.map(r => <RepoCard key={r.id} repo={r} />)
@@ -598,24 +642,24 @@ export default function GitHubRepo() {
                 )}
             </div>
 
-            {/* ── Pagination ── */}
+            {/* Pagination */}
             {filtered.length > PER_PAGE && (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 5, flexWrap: 'wrap', marginTop: 20 }}>
+              <div className="pagination-wrap">
                 <button className="pg-btn" onClick={() => paginate(safePage - 1)} disabled={safePage === 1}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => {
                   const n = i + 1;
                   const show = n === 1 || n === totalPages || (n >= safePage - 1 && n <= safePage + 1);
                   const ell = (n === 2 && safePage > 3) || (n === totalPages - 1 && safePage < totalPages - 2);
                   if (!show && !ell) return null;
-                  if (ell && !show) return <span key={n} style={{ width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#484f58' }}>…</span>;
+                  if (ell && !show) return <span key={n} style={{ width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#484f58' }}>…</span>;
                   return (
                     <button key={n} className={`pg-num${safePage === n ? ' active' : ''}`} onClick={() => paginate(n)}>{n}</button>
                   );
                 })}
                 <button className="pg-btn" onClick={() => paginate(safePage + 1)} disabled={safePage === totalPages}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               </div>
             )}
@@ -625,31 +669,25 @@ export default function GitHubRepo() {
 
       {/* ── Footer ── */}
       <footer style={{ background: '#161b22', borderTop: '1px solid #21262d', padding: '18px 16px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="#8b949e">
-              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-            </svg>
-            <span style={{ color: '#c9d1d9', fontWeight: 600, fontSize: 13 }}>GitHub Portfolio — @{profile.login}</span>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div className="footer-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="#8b949e">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+              </svg>
+              <span style={{ color: '#c9d1d9', fontWeight: 600, fontSize: 13 }}>GitHub Portfolio — @{profile.login}</span>
+            </div>
+            <div className="footer-links" style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+              {[
+                { label: 'Terms', href: '/terms' },
+                { label: 'Privacy', href: '/privacy' },
+                { label: 'Security', href: '/security' },
+                { label: 'Contact', href: '/contact' },
+              ].map(item => (
+                <a key={item.label} href={item.href} className="footer-link">{item.label}</a>
+              ))}
+            </div>
           </div>
-        <div style={{ display: 'flex', gap: 18, fontSize: 12, flexWrap: 'wrap' }}>
- {[
-   {label:'Terms', href:'/terms'},
-   {label:'Privacy', href:'/privacy'},
-   {label:'Security', href:'/security'},
-   {label:'Contact', href:'/contact'},
- ].map(item => (
-   <a
-     key={item.label}
-     href={item.href}
-     style={{ color:'#8b949e', textDecoration:'none' }}
-     onMouseEnter={e => e.target.style.color='#58a6ff'}
-     onMouseLeave={e => e.target.style.color='#8b949e'}
-   >
-     {item.label}
-   </a>
- ))}
-</div>
         </div>
       </footer>
     </div>
