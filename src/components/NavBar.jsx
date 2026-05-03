@@ -38,6 +38,8 @@ const NavBar = () => {
     { id: 9, link: "contact", icon: "◬" },
   ];
 
+  
+
   return (
     <>
       <style>{`
