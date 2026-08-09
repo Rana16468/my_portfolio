@@ -90,6 +90,48 @@ const FilterPill = ({ label, active, onClick }) => (
   </motion.button>
 );
 
+/* ─── Pagination Button ──────────────────────────────────────────── */
+const PageButton = ({ children, disabled, onClick, primary }) => (
+  <motion.button
+    whileHover={{ scale: disabled ? 1 : 1.07 }}
+    whileTap={{ scale: disabled ? 1 : 0.95 }}
+    disabled={disabled}
+    onClick={onClick}
+    className="px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide disabled:opacity-30 disabled:cursor-not-allowed transition-shadow"
+    style={{
+      background:
+        primary && !disabled
+          ? "linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)"
+          : "rgba(15,30,70,0.7)",
+      color: primary && !disabled ? "#e0f2fe" : "#93c5fd",
+      border: primary && !disabled ? "none" : "1px solid rgba(99,179,237,0.2)",
+      boxShadow: primary && !disabled ? "0 0 18px rgba(14,165,233,0.4)" : "none",
+    }}
+  >
+    {children}
+  </motion.button>
+);
+
+/* ─── Page Number Pill ───────────────────────────────────────────── */
+const PageNumber = ({ number, active, onClick }) => (
+  <motion.button
+    whileHover={{ scale: active ? 1 : 1.1 }}
+    whileTap={{ scale: 0.9 }}
+    onClick={onClick}
+    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-xs sm:text-sm font-bold"
+    style={{
+      background: active
+        ? "linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)"
+        : "transparent",
+      color: active ? "#e0f2fe" : "#7dd3fc",
+      border: active ? "none" : "1px solid rgba(99,179,237,0.15)",
+      boxShadow: active ? "0 0 14px rgba(14,165,233,0.4)" : "none",
+    }}
+  >
+    {number}
+  </motion.button>
+);
+
 /* ─── Project Card ───────────────────────────────────────────────── */
 const ProjectCard = ({ project, index }) => {
   const { _id, src, demo, code, server } = project;
@@ -229,7 +271,7 @@ const ProjectCard = ({ project, index }) => {
               border: "1px solid rgba(99,179,237,0.25)",
               boxShadow: hovered ? "0 0 20px rgba(14,165,233,0.2)" : "none",
               transition: "box-shadow 0.3s",
-              margin:"6px"
+              margin: "6px"
             }}
           >
             View Project Details →
@@ -243,6 +285,8 @@ const ProjectCard = ({ project, index }) => {
 /* ─── Main Portfolio ─────────────────────────────────────────────── */
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const limit = 10;
   const filters = ["All", "Frontend", "Full Stack", "Mobile"];
 
   const particles = useRef(
@@ -262,23 +306,64 @@ const Portfolio = () => {
     }))
   ).current;
 
-  const { data: allprojects = [], isLoading, error } = useQuery({
-    queryKey: ["allprojects"],
+  const {
+    data: allprojects = {},
+    isLoading,
+    error,
+    isPreviousData,
+  } = useQuery({
+    queryKey: ["allprojects", page],
     queryFn: async () => {
-      const res = await fetch(`${process.env.REACT_APP_SERVER_URL}/project/`, {
-        method: "GET",
-        headers: { authorization: `${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/project?page=${page}&limit=${limit}`,
+        {
+          method: "GET",
+          headers: { authorization: `${localStorage.getItem("token")}` },
+        }
+      );
       if (!res.ok) throw new Error("Network response was not ok");
       return res.json();
     },
+    keepPreviousData: true,
     onError: (err) => toast.error(`Failed to fetch: ${err.message}`),
   });
 
+  // Only show the full-page spinner on the very first load, not on page changes.
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorPage />;
 
-  const projects = allprojects?.data ?? [];
+  // ── FIX ──────────────────────────────────────────────────────────
+  // The API response shape is:
+  // { success, message, data: { meta: { page, limit, total, totalPage }, data: [...] } }
+  // so the actual project array lives at allprojects.data.data,
+  // and pagination info lives at allprojects.data.meta.
+  const projects = allprojects?.data?.data ?? [];
+  const totalPages = allprojects?.data?.meta?.totalPage ?? 1;
+  const totalCount = allprojects?.data?.meta?.total ?? projects.length;
+  // ─────────────────────────────────────────────────────────────────
+
+  // Build a compact page-number list: first, last, current ±1, with ellipses.
+  const getPageNumbers = () => {
+    const pages = [];
+    const window = 1;
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= page - window && i <= page + window)
+      ) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+    return pages;
+  };
+
+  const handleFilterClick = (f) => {
+    setActiveFilter(f);
+    setPage(1); // reset to page 1 whenever the filter changes
+  };
 
   return (
     <div
@@ -383,13 +468,16 @@ const Portfolio = () => {
               key={f}
               label={f}
               active={activeFilter === f}
-              onClick={() => setActiveFilter(f)}
+              onClick={() => handleFilterClick(f)}
             />
           ))}
         </motion.div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-7">
+        {/* Grid — dimmed slightly while a new page is fetched in the background */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-7 transition-opacity duration-300"
+          style={{ opacity: isPreviousData ? 0.55 : 1 }}
+        >
           {projects.map((project, index) => (
             <ProjectCard key={project._id} project={project} index={index} />
           ))}
@@ -416,6 +504,54 @@ const Portfolio = () => {
             </div>
             <h3 className="text-lg sm:text-xl font-bold text-sky-200 mb-2">No Projects Yet</h3>
             <p className="text-sky-400/70 text-xs sm:text-sm">Start adding projects to showcase your portfolio.</p>
+          </motion.div>
+        )}
+
+        {/* Pagination Controls */}
+        {projects.length > 0 && totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="flex flex-col items-center gap-3 mt-10 sm:mt-14"
+          >
+            <div className="flex items-center gap-2 sm:gap-3">
+              <PageButton
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              >
+                ← Prev
+              </PageButton>
+
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                {getPageNumbers().map((p, i) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${i}`} className="px-1 text-sky-500/60 text-xs sm:text-sm">
+                      …
+                    </span>
+                  ) : (
+                    <PageNumber
+                      key={p}
+                      number={p}
+                      active={p === page}
+                      onClick={() => setPage(p)}
+                    />
+                  )
+                )}
+              </div>
+
+              <PageButton
+                primary
+                disabled={page === totalPages || isPreviousData}
+                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              >
+                Next →
+              </PageButton>
+            </div>
+
+            <p className="text-xs text-sky-500/60">
+              Showing page {page} of {totalPages} · {totalCount} project{totalCount === 1 ? "" : "s"} total
+            </p>
           </motion.div>
         )}
       </div>

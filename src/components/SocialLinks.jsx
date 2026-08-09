@@ -49,7 +49,7 @@ const links = [
     id: 7,
     label: "Telegram",
     icon: <FaTelegram size={20} />,
-    href: "https://t.me/8801722305054",
+    href: "https://t.me/+8801722305054",
     gradient: "linear-gradient(135deg, #229ED9, #0E76A8)",
   },
 ];

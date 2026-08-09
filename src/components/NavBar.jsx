@@ -4,8 +4,18 @@ import { Link } from "react-scroll";
 const NavBar = () => {
   const [nav, setNav] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [scrolled, setScrolled] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState(null);
   const navRef = useRef(null);
+  console.log(hoveredLink)
+
+
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -15,419 +25,592 @@ const NavBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [nav]);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (navRef.current) {
-        const rect = navRef.current.getBoundingClientRect();
-        setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-      }
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
   const links = [
-    { id: 1, link: "home", icon: "⌂" },
-    { id: 2, link: "my-github", icon: "◈" },
-    { id: 3, link: "about", icon: "◉" },
-    { id: 4, link: "project", icon: "◫" },
-    { id: 5, link: "experience", icon: "◎" },
-    { id: 6, link: "skills", icon: "◐" },
-    { id: 7, link: "statistic", icon: "◑" },
-    { id: 8, link: "blogs", icon: "◻" },
-    { id: 9, link: "contact", icon: "◬" },
+    { id: 1, link: "home",       label: "Home",       num: "01" },
+    { id: 2, link: "my-github",  label: "GitHub",     num: "02" },
+    { id: 3, link: "about",      label: "About",      num: "03" },
+    { id: 4, link: "project",    label: "Projects",   num: "04" },
+    { id: 5, link: "experience", label: "Experience", num: "05" },
+    { id: 6, link: "skills",     label: "Skills",     num: "06" },
+    { id: 7, link: "statistic",  label: "Stats",      num: "07" },
+    { id: 8, link: "blogs",      label: "Blogs",      num: "08" },
+    { id: 9, link: "contact",    label: "Contact",    num: "09" },
   ];
-
-  
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap');
 
         :root {
-          --nav-bg: rgba(4, 4, 12, 0.92);
-          --accent: #00f5d4;
-          --accent2: #f72585;
-          --text: #e8e8f0;
-          --muted: #6b6b8a;
-          --border: rgba(0, 245, 212, 0.15);
+          --ink: #0a0a0f;
+          --paper: #f5f0e8;
+          --gold: #c9a84c;
+          --gold-light: #e8cc7a;
+          --gold-dim: rgba(201,168,76,0.18);
+          --gold-glow: rgba(201,168,76,0.35);
+          --ivory: #f0e9d6;
+          --smoke: rgba(245,240,232,0.06);
+          --line: rgba(201,168,76,0.2);
+          --red-accent: #c0392b;
         }
 
-        .navbar-root { font-family: 'Syne', sans-serif; }
+        /* ─── Reset & Base ─── */
+        .nb-root * { box-sizing: border-box; margin: 0; padding: 0; }
+        .nb-root { font-family: 'Outfit', sans-serif; }
 
-        .navbar-glass {
-          background: var(--nav-bg);
-          backdrop-filter: blur(24px) saturate(180%);
-          -webkit-backdrop-filter: blur(24px) saturate(180%);
-          border-bottom: 1px solid var(--border);
-          box-shadow: 0 0 80px rgba(0, 245, 212, 0.03);
-        }
-
-        .navbar-glass::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(
-            600px circle at var(--mx, 50%) var(--my, 50%),
-            rgba(0, 245, 212, 0.04),
-            transparent 60%
-          );
-          pointer-events: none;
-          transition: background 0.1s;
-        }
-
-        .logo-text {
-          font-family: 'Syne', sans-serif;
-          font-weight: 800;
-          font-size: 1.4rem;
-          letter-spacing: -0.02em;
-          background: linear-gradient(135deg, #00f5d4 0%, #00b4d8 50%, #f72585 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          position: relative;
-        }
-
-        .logo-badge {
-          font-family: 'Space Mono', monospace;
-          font-size: 0.55rem;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          color: var(--accent);
-          opacity: 0.7;
-          display: block;
-          margin-top: -4px;
-        }
-
-        .nav-item {
-          position: relative;
-          font-family: 'Space Mono', monospace;
-          font-size: 0.65rem;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--muted);
-          padding: 6px 14px;
-          cursor: pointer;
-          transition: color 0.25s ease;
+        /* ─── Main Bar ─── */
+        .nb-bar {
+          position: fixed;
+          top: 0; left: 0; right: 0;
+          z-index: 9000;
+          height: 72px;
           display: flex;
           align-items: center;
-          gap: 5px;
-          white-space: nowrap;
+          justify-content: space-between;
+          padding: 0 36px;
+          transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
         }
 
-        .nav-item::after {
+        .nb-bar.scrolled {
+          background: rgba(10,10,15,0.96);
+          backdrop-filter: blur(28px);
+          border-bottom: 1px solid var(--line);
+          height: 64px;
+          box-shadow: 0 2px 60px rgba(0,0,0,0.6), 0 0 0 0.5px var(--line);
+        }
+
+        .nb-bar:not(.scrolled) {
+          background: linear-gradient(
+            180deg,
+            rgba(10,10,15,0.88) 0%,
+            rgba(10,10,15,0.0) 100%
+          );
+        }
+
+        /* ─── Gold top edge line ─── */
+        .nb-bar::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--gold) 30%,
+            var(--gold-light) 50%,
+            var(--gold) 70%,
+            transparent 100%
+          );
+          opacity: 0.9;
+        }
+
+        /* ─── LOGO ─── */
+        .nb-logo-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          cursor: pointer;
+          text-decoration: none;
+          position: relative;
+        }
+
+        .nb-logo-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 600;
+          font-size: 1.55rem;
+          letter-spacing: 0.04em;
+          color: var(--ivory);
+          line-height: 1;
+          position: relative;
+          display: inline-block;
+        }
+
+        .nb-logo-name em {
+          font-style: normal;
+          color: var(--gold);
+        }
+
+        .nb-logo-sub {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.52rem;
+          font-weight: 300;
+          letter-spacing: 0.32em;
+          text-transform: uppercase;
+          color: var(--gold);
+          opacity: 0.75;
+          padding-left: 2px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .nb-logo-sub::before {
+          content: '';
+          width: 16px;
+          height: 1px;
+          background: var(--gold);
+          opacity: 0.6;
+          display: inline-block;
+        }
+
+        /* ─── Desktop Nav ─── */
+        .nb-desktop {
+          display: none;
+          align-items: center;
+          gap: 0;
+        }
+
+        @media (min-width: 1024px) {
+          .nb-desktop { display: flex !important; }
+          .nb-ham { display: none !important; }
+        }
+
+        .nb-link {
+          position: relative;
+          font-family: 'DM Mono', monospace;
+          font-size: 0.6rem;
+          font-weight: 400;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: rgba(240,233,214,0.5);
+          padding: 6px 16px;
+          cursor: pointer;
+          transition: color 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          border: none;
+          background: none;
+          text-decoration: none;
+        }
+
+        .nb-link-num {
+          font-size: 0.42rem;
+          letter-spacing: 0.1em;
+          color: var(--gold);
+          opacity: 0;
+          transition: opacity 0.25s;
+          font-family: 'DM Mono', monospace;
+        }
+
+        .nb-link:hover .nb-link-num,
+        .nb-link.active .nb-link-num {
+          opacity: 0.7;
+        }
+
+        .nb-link:hover { color: var(--ivory); }
+        .nb-link.active { color: var(--gold-light); }
+
+        /* Animated underline */
+        .nb-link::after {
           content: '';
           position: absolute;
           bottom: -2px;
-          left: 14px;
-          right: 14px;
+          left: 50%;
+          width: 0;
           height: 1px;
-          background: var(--accent);
-          transform: scaleX(0);
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          transform-origin: left;
+          background: linear-gradient(90deg, transparent, var(--gold), transparent);
+          transition: width 0.35s cubic-bezier(0.4,0,0.2,1), left 0.35s cubic-bezier(0.4,0,0.2,1);
         }
 
-        .nav-item:hover { color: var(--text); }
-        .nav-item:hover::after { transform: scaleX(1); }
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active::after { transform: scaleX(1); }
-
-        .nav-icon {
-          font-size: 0.7rem;
-          opacity: 0.5;
-          transition: opacity 0.25s;
+        .nb-link:hover::after,
+        .nb-link.active::after {
+          width: calc(100% - 32px);
+          left: 16px;
         }
 
-        .nav-item:hover .nav-icon,
-        .nav-item.active .nav-icon { opacity: 1; }
-
-        .logo-dot {
-          width: 6px;
-          height: 6px;
-          background: var(--accent);
-          border-radius: 50%;
-          display: inline-block;
-          margin-left: 4px;
-          animation: pulse-dot 2s infinite;
-          vertical-align: middle;
+        /* Vertical separator lines between links */
+        .nb-link + .nb-link::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          height: 12px;
+          width: 1px;
+          background: var(--line);
         }
 
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(0.7); }
+        /* ─── CTA Button ─── */
+        .nb-cta {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.6rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--ink);
+          background: var(--gold);
+          border: none;
+          padding: 9px 22px;
+          cursor: pointer;
+          margin-left: 24px;
+          position: relative;
+          overflow: hidden;
+          clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+          transition: all 0.3s ease;
+          font-weight: 500;
         }
 
-        .nav-pill {
-          background: rgba(255,255,255,0.03);
-          border: 1px solid var(--border);
-          border-radius: 100px;
-          padding: 6px 8px;
-          display: flex;
-          align-items: center;
-          gap: 2px;
+        .nb-cta::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: var(--gold-light);
+          transform: translateX(-101%);
+          transition: transform 0.3s ease;
         }
 
-        .ham-btn {
-          width: 40px;
-          height: 40px;
-          border: 1px solid var(--border);
-          border-radius: 10px;
-          background: rgba(255,255,255,0.04);
+        .nb-cta:hover::before { transform: translateX(0); }
+        .nb-cta span { position: relative; z-index: 1; }
+
+        /* ─── Hamburger ─── */
+        .nb-ham {
+          width: 44px;
+          height: 44px;
+          background: var(--smoke);
+          border: 1px solid var(--line);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 5px;
+          gap: 6px;
           cursor: pointer;
           transition: border-color 0.3s, background 0.3s;
+          position: relative;
+          overflow: hidden;
         }
 
-        .ham-btn:hover {
-          border-color: var(--accent);
-          background: rgba(0, 245, 212, 0.05);
+        .nb-ham::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: var(--gold-dim);
+          opacity: 0;
+          transition: opacity 0.3s;
         }
 
-        .ham-line {
+        .nb-ham:hover::before { opacity: 1; }
+        .nb-ham:hover { border-color: var(--gold); }
+
+        .nb-ham-line {
+          width: 22px;
           height: 1.5px;
-          background: var(--text);
-          border-radius: 2px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: var(--ivory);
+          transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+          position: relative;
+          z-index: 1;
         }
 
-        .ham-line-1 { width: 20px; }
-        .ham-line-2 { width: 14px; }
-        .ham-line-3 { width: 20px; }
+        .nb-ham-line-mid { width: 15px; margin-right: -7px; }
 
-        .ham-btn.open .ham-line-1 { transform: translateY(6.5px) rotate(45deg); width: 20px; }
-        .ham-btn.open .ham-line-2 { opacity: 0; width: 0; }
-        .ham-btn.open .ham-line-3 { transform: translateY(-6.5px) rotate(-45deg); width: 20px; }
+        .nb-ham.open .nb-ham-line-top { transform: translateY(7.5px) rotate(45deg); width: 22px; background: var(--gold); }
+        .nb-ham.open .nb-ham-line-mid { opacity: 0; transform: scaleX(0); }
+        .nb-ham.open .nb-ham-line-bot { transform: translateY(-7.5px) rotate(-45deg); background: var(--gold); }
 
-        .mobile-drawer {
-          position: fixed;
-          top: 0; right: 0; bottom: 0;
-          width: min(320px, 85vw);
-          background: rgba(4, 4, 12, 0.98);
-          backdrop-filter: blur(40px);
-          border-left: 1px solid var(--border);
-          z-index: 100;
-          transform: translateX(100%);
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          display: flex;
-          flex-direction: column;
-          padding: 80px 40px 60px;
-        }
-
-        .mobile-drawer.open { transform: translateX(0); }
-
-        .mobile-overlay {
+        /* ─── Mobile Overlay ─── */
+        .nb-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(4px);
-          z-index: 99;
+          z-index: 8998;
+          background: rgba(10,10,15,0.7);
+          backdrop-filter: blur(8px);
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.4s ease;
+          transition: opacity 0.5s ease;
+        }
+        .nb-overlay.open { opacity: 1; pointer-events: auto; }
+
+        /* ─── Mobile Drawer ─── */
+        .nb-drawer {
+          position: fixed;
+          top: 0; right: 0; bottom: 0;
+          width: min(340px, 88vw);
+          z-index: 8999;
+          background: #0d0d14;
+          border-left: 1px solid var(--line);
+          display: flex;
+          flex-direction: column;
+          transform: translateX(105%);
+          transition: transform 0.55s cubic-bezier(0.16,1,0.3,1);
+          overflow: hidden;
         }
 
-        .mobile-overlay.open { opacity: 1; pointer-events: auto; }
+        .nb-drawer::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+        }
 
-        .mobile-nav-item {
+        .nb-drawer.open { transform: translateX(0); }
+
+        .nb-drawer-head {
+          padding: 28px 36px 24px;
+          border-bottom: 1px solid var(--line);
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+        }
+
+        .nb-drawer-close {
+          width: 36px; height: 36px;
+          background: transparent;
+          border: 1px solid var(--line);
+          color: rgba(240,233,214,0.5);
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: border-color 0.25s, color 0.25s, background 0.25s;
+          clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .nb-drawer-close:hover {
+          border-color: var(--gold);
+          color: var(--gold);
+          background: var(--gold-dim);
+        }
+
+        .nb-drawer-body {
+          flex: 1;
+          overflow-y: auto;
+          padding: 16px 0;
+        }
+
+        .nb-mob-item {
           display: flex;
           align-items: center;
-          gap: 16px;
-          padding: 16px 0;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          padding: 0 36px;
+          height: 64px;
           cursor: pointer;
-          transition: all 0.25s ease;
+          position: relative;
+          transition: background 0.25s;
+          border-bottom: 1px solid rgba(201,168,76,0.06);
+          text-decoration: none;
         }
 
-        .mobile-nav-item:hover .mobile-nav-label {
-          color: var(--accent);
+        .nb-mob-item::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 0; bottom: 0;
+          width: 2px;
+          background: var(--gold);
+          transform: scaleY(0);
+          transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+          transform-origin: bottom;
+        }
+
+        .nb-mob-item:hover::before,
+        .nb-mob-item.active::before { transform: scaleY(1); }
+
+        .nb-mob-item:hover {
+          background: var(--gold-dim);
+        }
+
+        .nb-mob-num {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.52rem;
+          color: var(--gold);
+          opacity: 0.6;
+          margin-right: 20px;
+          letter-spacing: 0.08em;
+          min-width: 22px;
+        }
+
+        .nb-mob-label {
+          font-family: 'Outfit', sans-serif;
+          font-size: 1rem;
+          font-weight: 400;
+          color: rgba(240,233,214,0.65);
+          letter-spacing: 0.04em;
+          transition: color 0.25s, transform 0.25s;
+          flex: 1;
+        }
+
+        .nb-mob-item:hover .nb-mob-label,
+        .nb-mob-item.active .nb-mob-label {
+          color: var(--ivory);
           transform: translateX(6px);
         }
 
-        .mobile-nav-icon {
-          font-size: 1rem;
-          color: var(--muted);
-          width: 24px;
-          text-align: center;
-          transition: color 0.25s;
+        .nb-mob-arrow {
+          font-size: 0.85rem;
+          color: var(--gold);
+          opacity: 0;
+          transition: opacity 0.25s, transform 0.25s;
         }
 
-        .mobile-nav-item:hover .mobile-nav-icon { color: var(--accent); }
+        .nb-mob-item:hover .nb-mob-arrow { opacity: 1; transform: translateX(4px); }
 
-        .mobile-nav-label {
-          font-family: 'Syne', sans-serif;
-          font-size: 1.1rem;
-          font-weight: 600;
-          color: var(--text);
-          text-transform: capitalize;
-          transition: color 0.25s, transform 0.25s;
+        /* ─── Drawer Footer ─── */
+        .nb-drawer-footer {
+          padding: 24px 36px 32px;
+          border-top: 1px solid var(--line);
         }
 
-        .mobile-nav-num {
-          margin-left: auto;
-          font-family: 'Space Mono', monospace;
-          font-size: 0.6rem;
-          color: var(--muted);
-        }
-
-        .drawer-close {
-          position: absolute;
-          top: 24px; right: 24px;
-          width: 36px; height: 36px;
-          border: 1px solid var(--border);
-          border-radius: 8px;
-          background: transparent;
-          color: var(--muted);
+        .nb-drawer-footer-status {
           display: flex;
           align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          font-size: 1.1rem;
-          transition: border-color 0.2s, color 0.2s;
+          gap: 10px;
+          margin-bottom: 12px;
         }
 
-        .drawer-close:hover { border-color: var(--accent2); color: var(--accent2); }
-
-        .drawer-footer {
-          margin-top: auto;
-          padding-top: 32px;
-          border-top: 1px solid var(--border);
+        .nb-pulse {
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          background: #2ecc71;
+          position: relative;
         }
 
-        .drawer-footer-label {
-          font-family: 'Space Mono', monospace;
-          font-size: 0.6rem;
+        .nb-pulse::after {
+          content: '';
+          position: absolute;
+          inset: -3px;
+          border-radius: 50%;
+          border: 1px solid #2ecc71;
+          animation: nb-ripple 2s infinite;
+        }
+
+        @keyframes nb-ripple {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        .nb-status-text {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.58rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: rgba(240,233,214,0.4);
         }
 
-        .status-dot {
-          width: 5px; height: 5px;
-          background: var(--accent);
-          border-radius: 50%;
-          display: inline-block;
-          margin-right: 6px;
-          animation: pulse-dot 2s infinite;
+        .nb-drawer-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: var(--ivory);
+          letter-spacing: 0.04em;
         }
 
-        @keyframes fade-in-down {
-          from { opacity: 0; transform: translateY(-12px); }
-          to { opacity: 1; transform: translateY(0); }
+        .nb-drawer-role {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.55rem;
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          color: var(--gold);
+          opacity: 0.7;
+          margin-top: 4px;
         }
 
-        .nav-animate { animation: fade-in-down 0.5s ease both; }
-
-        @media (min-width: 768px) {
-          #desktop-nav { display: flex !important; }
-          .ham-btn { display: none !important; }
+        /* ─── Fade-in animation for bar ─── */
+        @keyframes nb-drop {
+          from { opacity: 0; transform: translateY(-20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
+
+        .nb-bar { animation: nb-drop 0.7s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
-      <div className="navbar-root">
-        <div
+      <div className="nb-root">
+        {/* ── Main Bar ── */}
+        <header
           ref={navRef}
-          className="navbar-container navbar-glass nav-animate"
-          style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0,
-            zIndex: 50,
-            height: "70px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 28px",
-            transition: "all 0.3s ease",
-            "--mx": `${mousePos.x}px`,
-            "--my": `${mousePos.y}px`,
-          }}
+          className={`nb-bar navbar-container ${scrolled ? "scrolled" : ""}`}
         >
           {/* Logo */}
-          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
-            <span className="logo-text">
-              A M Sohel Rana
-              <span className="logo-dot" />
+          <div className="nb-logo-wrap">
+            <span className="nb-logo-name">
+              A M <em>Sohel</em> Rana
             </span>
-            <span className="logo-badge">Portfolio · Dev</span>
+            
           </div>
 
           {/* Desktop Nav */}
-          <nav className="nav-pill" style={{ display: "none" }} id="desktop-nav">
-            {links.map(({ id, link, icon }) => (
+          <nav className="nb-desktop" style={{ display: "none" }} id="desktop-nav">
+            {links.map(({ id, link, label, num }) => (
               <Link
                 key={id}
                 to={link}
                 smooth
-                duration={500}
+                duration={600}
                 spy
+                offset={-72}
                 onSetActive={() => setActiveLink(link)}
-                className={`nav-item ${activeLink === link ? "active" : ""}`}
+                className={`nb-link ${activeLink === link ? "active" : ""}`}
+                onMouseEnter={() => setHoveredLink(link)}
+                onMouseLeave={() => setHoveredLink(null)}
               >
-                <span className="nav-icon">{icon}</span>
-                {link.replace("-", " ")}
+                <span className="nb-link-num">{num}</span>
+                {label}
               </Link>
             ))}
+
+            <a
+  href="https://drive.google.com/file/d/1-quvJP4Yn3HzbJKAeVGXf2BebbImPoxF/view"
+  target="_blank"
+  rel="noreferrer"
+  className="nb-cta"
+>
+  Hire Me
+</a>
           </nav>
 
           {/* Hamburger */}
           <button
-            className={`ham-btn ${nav ? "open" : ""}`}
+            className={`nb-ham ${nav ? "open" : ""}`}
             onClick={() => setNav(!nav)}
             aria-label="Toggle Menu"
           >
-            <div className="ham-line ham-line-1" />
-            <div className="ham-line ham-line-2" />
-            <div className="ham-line ham-line-3" />
+            <div className="nb-ham-line nb-ham-line-top" />
+            <div className="nb-ham-line nb-ham-line-mid" />
+            <div className="nb-ham-line nb-ham-line-bot" />
           </button>
-        </div>
+        </header>
 
-        {/* Mobile Overlay */}
-        <div
-          className={`mobile-overlay ${nav ? "open" : ""}`}
-          onClick={() => setNav(false)}
-        />
+        {/* ── Overlay ── */}
+        <div className={`nb-overlay ${nav ? "open" : ""}`} onClick={() => setNav(false)} />
 
-        {/* Mobile Drawer */}
-        <div className={`mobile-drawer ${nav ? "open" : ""}`}>
-          <button className="drawer-close" onClick={() => setNav(false)}>
-            ✕
-          </button>
-
-          <div style={{ marginBottom: "8px" }}>
-            <span className="logo-badge" style={{ fontSize: "0.65rem", letterSpacing: "0.2em" }}>
-              NAVIGATION
-            </span>
+        {/* ── Mobile Drawer ── */}
+        <aside className={`nb-drawer ${nav ? "open" : ""}`}>
+          <div className="nb-drawer-head">
+            <div>
+              <div className="nb-drawer-name">A M Sohel Rana</div>
+              <div className="nb-drawer-role">Full Stack Developer</div>
+            </div>
+            <button className="nb-drawer-close" onClick={() => setNav(false)}>✕</button>
           </div>
 
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {links.map(({ id, link, icon }) => (
-              <li key={id}>
-                <Link to={link} smooth duration={500} onClick={() => setNav(false)}>
-                  <div className="mobile-nav-item">
-                    <span className="mobile-nav-icon">{icon}</span>
-                    <span className="mobile-nav-label">{link.replace("-", " ")}</span>
-                    <span className="mobile-nav-num">0{id}</span>
-                  </div>
-                </Link>
-              </li>
+          <nav className="nb-drawer-body">
+            {links.map(({ id, link, label, num }) => (
+              <Link
+                key={id}
+                to={link}
+                smooth
+                duration={600}
+                offset={-72}
+                onClick={() => setNav(false)}
+              >
+                <div className={`nb-mob-item ${activeLink === link ? "active" : ""}`}>
+                  <span className="nb-mob-num">{num}</span>
+                  <span className="nb-mob-label">{label}</span>
+                  <span className="nb-mob-arrow">→</span>
+                </div>
+              </Link>
             ))}
-          </ul>
+          </nav>
 
-          <div className="drawer-footer">
-            <p className="drawer-footer-label">
-              <span className="status-dot" />
-              Available for work
-            </p>
-            <p className="logo-text" style={{ fontSize: "0.95rem", marginTop: "8px" }}>
+          <div className="nb-drawer-footer">
+            <div className="nb-drawer-footer-status">
+              <div className="nb-pulse" />
+              <span className="nb-status-text">Available for work</span>
+            </div>
+            <div className="nb-drawer-name" style={{ fontSize: "1rem" }}>
               A M Sohel Rana
-            </p>
+            </div>
+            <div className="nb-drawer-role">Portfolio · 2025</div>
           </div>
-        </div>
+        </aside>
       </div>
     </>
   );

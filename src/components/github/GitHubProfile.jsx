@@ -1,4 +1,4 @@
-import { MapPin, Globe, Calendar, Users, Archive, Star, GitBranch, Activity, Mail, Twitter, Building2, Briefcase, Link, BookOpen, Code2 } from "lucide-react";
+import { MapPin, Globe, Calendar, Users, Archive, Star, GitBranch, Activity, Mail, Twitter, Building2, Briefcase, Link, BookOpen, Code2, BadgeCheck } from "lucide-react";
 import LoadingSpinner from "../LoadingSpinner";
 import ErrorPage from "../ErrorPage";
 import toast from "react-hot-toast";
@@ -16,7 +16,7 @@ const styles = `
       radial-gradient(ellipse 60% 40% at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
       radial-gradient(ellipse 40% 30% at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
     font-family: 'Space Grotesk', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
     position: relative;
   }
 
@@ -27,7 +27,7 @@ const styles = `
     background-image:
       linear-gradient(rgba(148,163,184,0.025) 1px, transparent 1px),
       linear-gradient(90deg, rgba(148,163,184,0.025) 1px, transparent 1px);
-    background-size: 48px 48px;
+    background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
   }
@@ -35,48 +35,48 @@ const styles = `
   .gh-wrapper {
     position: relative;
     z-index: 1;
-    max-width: 1400px;
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 2.5rem 1.5rem;
+    padding: 1.25rem 1rem;
   }
 
+  @media (min-width: 640px) {
+    .gh-wrapper { padding: 1.75rem 1.5rem; }
+  }
+
+  @media (min-width: 1024px) {
+    .gh-wrapper { padding: 2rem 1.5rem; }
+  }
+
+  /* ── COLUMN LAYOUT (stacked on every breakpoint) ── */
   .gh-layout {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  @media (min-width: 768px) {
-    .gh-layout {
-      flex-direction: row;
-      gap: 1.5rem;
-    }
-  }
-
-  /* ── SIDEBAR ── */
-  .gh-sidebar {
+    gap: 1rem;
     width: 100%;
   }
 
-  @media (min-width: 768px) {
-    .gh-sidebar { width: 300px; flex-shrink: 0; }
-  }
+  .gh-sidebar { width: 100%; }
 
   .gh-card {
     background: rgba(15, 20, 35, 0.8);
     border: 1px solid rgba(148, 163, 184, 0.08);
-    border-radius: 16px;
-    padding: 1.25rem;
+    border-radius: 14px;
+    padding: 0.875rem;
     backdrop-filter: blur(16px);
     position: relative;
     overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .gh-card { padding: 1rem; }
   }
 
   .gh-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 16px;
+    border-radius: 14px;
     padding: 1px;
     background: linear-gradient(135deg, rgba(56,189,248,0.15) 0%, transparent 50%, rgba(99,102,241,0.1) 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -85,16 +85,90 @@ const styles = `
     pointer-events: none;
   }
 
-  /* ── INFO ROWS ── */
+  /* ── IDENTITY HEADER ── */
+  .gh-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 0.875rem;
+    margin-bottom: 0.875rem;
+    border-bottom: 1px solid rgba(148,163,184,0.08);
+  }
+
+  .gh-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(56,189,248,0.3);
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  .gh-identity-text { min-width: 0; }
+
+  .gh-name-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .gh-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f1f5f9;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gh-username {
+    font-size: 12px;
+    color: #38bdf8;
+    font-family: 'Fira Code', monospace;
+    margin-top: 1px;
+  }
+
+  .gh-bio {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+
+  /* ── SECTION LABEL ── */
+  .gh-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-family: 'Fira Code', monospace;
+    margin: 0.875rem 0 0.5rem;
+  }
+
+  .gh-label:first-of-type { margin-top: 0; }
+
+  /* ── INFO GRID (compact, adaptive columns) ── */
+  .gh-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 6px;
+  }
+
   .gh-info-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
+    gap: 7px;
+    padding: 7px 9px;
+    border-radius: 8px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(148,163,184,0.06);
     transition: background 0.2s, border-color 0.2s;
+    min-width: 0;
   }
 
   .gh-info-row:hover {
@@ -103,173 +177,125 @@ const styles = `
   }
 
   .gh-info-row span, .gh-info-row a {
-    font-size: 13px;
+    font-size: 12px;
     color: #94a3b8;
     text-decoration: none;
-    line-height: 1.4;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .gh-info-row a {
-    color: #38bdf8;
-    transition: color 0.2s;
-  }
-
+  .gh-info-row a { color: #38bdf8; }
   .gh-info-row a:hover { color: #7dd3fc; }
 
   .gh-icon {
-    width: 16px;
-    height: 16px;
+    width: 13px;
+    height: 13px;
     flex-shrink: 0;
     color: #38bdf8;
     opacity: 0.8;
   }
 
-  .gh-info-stack {
+  /* ── STATS GRID (compact tiles) ── */
+  .gh-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 6px;
+  }
+
+  .gh-stat-tile {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 1rem;
-  }
-
-  /* ── STATS PANEL ── */
-  .gh-stats-panel {
-    margin-top: 1.25rem;
-    border-radius: 12px;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: 9px;
     background: rgba(10, 15, 30, 0.6);
     border: 1px solid rgba(56,189,248,0.1);
-    overflow: hidden;
+    transition: background 0.15s, border-color 0.15s;
   }
 
-  .gh-stats-header {
+  .gh-stat-tile:hover {
+    background: rgba(56,189,248,0.05);
+    border-color: rgba(56,189,248,0.2);
+  }
+
+  .gh-stat-tile-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 14px;
-    border-bottom: 1px solid rgba(56,189,248,0.08);
-    background: linear-gradient(90deg, rgba(56,189,248,0.08) 0%, rgba(99,102,241,0.06) 100%);
-  }
-
-  .gh-stats-header span {
-    font-size: 13px;
-    font-weight: 600;
-    color: #e2e8f0;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    font-family: 'Fira Code', monospace;
-  }
-
-  .gh-stat-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    border-bottom: 1px solid rgba(148,163,184,0.04);
-    transition: background 0.15s;
-  }
-
-  .gh-stat-row:last-child { border-bottom: none; }
-
-  .gh-stat-row:hover {
-    background: rgba(56,189,248,0.04);
-  }
-
-  .gh-stat-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: 5px;
+    font-size: 10px;
     color: #64748b;
     font-family: 'Fira Code', monospace;
     letter-spacing: 0.02em;
+    white-space: nowrap;
   }
 
-  .gh-stat-value {
-    font-size: 13px;
+  .gh-stat-tile-value {
+    font-size: 15px;
     font-weight: 600;
     color: #38bdf8;
     font-family: 'Fira Code', monospace;
-    background: rgba(56,189,248,0.08);
-    padding: 2px 8px;
-    border-radius: 6px;
-    border: 1px solid rgba(56,189,248,0.15);
+    line-height: 1.2;
   }
 
-  /* ── QUICK LINKS ── */
-  .gh-section {
-    margin-top: 1.25rem;
-    border-radius: 12px;
-    background: rgba(10,15,30,0.5);
-    border: 1px solid rgba(148,163,184,0.06);
-    overflow: hidden;
-  }
-
-  .gh-section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 14px;
-    border-bottom: 1px solid rgba(148,163,184,0.05);
-    background: rgba(255,255,255,0.02);
-  }
-
-  .gh-section-header span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-family: 'Fira Code', monospace;
+  /* ── QUICK LINKS (compact chip grid) ── */
+  .gh-link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
   }
 
   .gh-link-item {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 9px 14px;
-    font-size: 13px;
-    color: #64748b;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(148,163,184,0.04);
-    transition: background 0.15s, color 0.15s, padding-left 0.2s;
-  }
-
-  .gh-link-item:last-child { border-bottom: none; }
-
-  .gh-link-item:hover {
-    background: rgba(56,189,248,0.05);
-    color: #38bdf8;
-    padding-left: 18px;
-  }
-
-  /* ── ACCOUNT INFO ── */
-  .gh-account-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 14px;
-    border-bottom: 1px solid rgba(148,163,184,0.04);
-  }
-
-  .gh-account-row:last-child { border-bottom: none; }
-
-  .gh-account-label {
-    font-size: 12px;
-    color: #475569;
-    font-family: 'Fira Code', monospace;
-  }
-
-  .gh-account-value {
+    gap: 7px;
+    padding: 8px 10px;
     font-size: 12px;
     font-weight: 500;
-    color: #cbd5e1;
+    color: #94a3b8;
+    text-decoration: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(148,163,184,0.06);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gh-link-item:hover {
+    background: rgba(56,189,248,0.06);
+    color: #38bdf8;
+    border-color: rgba(56,189,248,0.18);
+  }
+
+  .gh-link-item svg { flex-shrink: 0; color: #38bdf8; opacity: 0.85; }
+
+  /* ── ACCOUNT INFO (compact chips) ── */
+  .gh-account-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .gh-account-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(148,163,184,0.08);
+    font-size: 11px;
     font-family: 'Fira Code', monospace;
   }
 
-  /* ── RIGHT CONTENT ── */
-  .gh-content {
-    flex: 1;
-    min-width: 0;
-  }
+  .gh-account-chip-label { color: #475569; }
+  .gh-account-chip-value { color: #cbd5e1; font-weight: 500; }
+
+  /* ── CONTENT ── */
+  .gh-content { width: 100%; min-width: 0; }
 
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 4px; }
@@ -324,7 +350,7 @@ export default function GitHubProfile() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const years = Math.floor(diffDays / 365);
     const months = Math.floor((diffDays % 365) / 30);
-    return `${years} year${years !== 1 ? "s" : ""}, ${months} month${months !== 1 ? "s" : ""}`;
+    return `${years}y ${months}m`;
   };
 
   const formatUpdatedAt = (dateString) => {
@@ -344,11 +370,36 @@ export default function GitHubProfile() {
         <div className="gh-wrapper">
           <main>
             <div className="gh-layout">
-              {/* ── LEFT SIDEBAR ── */}
+              {/* ── SIDEBAR ── */}
               <div className="gh-sidebar">
                 <div className="gh-card">
-                  {/* Info rows */}
-                  <div className="gh-info-stack">
+                  {/* ── IDENTITY ── */}
+                  <div className="gh-identity">
+                    {profileData?.avatar_url && (
+                      <img
+                        className="gh-avatar"
+                        src={profileData.avatar_url}
+                        alt={profileData?.login || "avatar"}
+                      />
+                    )}
+                    <div className="gh-identity-text">
+                      <div className="gh-name-row">
+                        <span className="gh-name">{profileData?.name || profileData?.login}</span>
+                        {profileData?.site_admin && (
+                          <BadgeCheck size={14} style={{ color: "#fbbf24", flexShrink: 0 }} />
+                        )}
+                      </div>
+                      <div className="gh-username">@{profileData?.login}</div>
+                      {profileData?.bio && <div className="gh-bio">{profileData.bio}</div>}
+                    </div>
+                  </div>
+
+                  {/* ── INFO ── */}
+                  <div className="gh-label">
+                    <MapPin size={12} />
+                    Profile
+                  </div>
+                  <div className="gh-info-grid">
                     {profileData?.company && (
                       <div className="gh-info-row">
                         <Building2 className="gh-icon" />
@@ -403,60 +454,39 @@ export default function GitHubProfile() {
                   </div>
 
                   {/* ── STATS ── */}
-                  <div className="gh-stats-panel">
-                    <div className="gh-stats-header">
-                      <Activity size={14} style={{ color: "#38bdf8" }} />
-                      <span>GitHub Stats</span>
+                  <div className="gh-label">
+                    <Activity size={12} />
+                    GitHub Stats
+                  </div>
+                  <div className="gh-stats-grid">
+                    <div className="gh-stat-tile">
+                      <span className="gh-stat-tile-label"><Archive size={11} /> Repos</span>
+                      <span className="gh-stat-tile-value">{profileData?.public_repos}</span>
                     </div>
-
-                    <div className="gh-stat-row">
-                      <span className="gh-stat-label">
-                        <Archive size={13} />
-                        Repositories
-                      </span>
-                      <span className="gh-stat-value">{profileData?.public_repos}</span>
+                    <div className="gh-stat-tile">
+                      <span className="gh-stat-tile-label"><Star size={11} /> Gists</span>
+                      <span className="gh-stat-tile-value">{profileData?.public_gists || 0}</span>
                     </div>
-
-                    <div className="gh-stat-row">
-                      <span className="gh-stat-label">
-                        <Star size={13} />
-                        Gists
-                      </span>
-                      <span className="gh-stat-value">{profileData?.public_gists || 0}</span>
+                    <div className="gh-stat-tile">
+                      <span className="gh-stat-tile-label"><GitBranch size={11} /> Exp</span>
+                      <span className="gh-stat-tile-value" style={{ fontSize: "13px" }}>{calculateTenure()}</span>
                     </div>
-
-                    <div className="gh-stat-row">
-                      <span className="gh-stat-label">
-                        <GitBranch size={13} />
-                        Exp
-                      </span>
-                      <span className="gh-stat-value" style={{ fontSize: "11px" }}>{calculateTenure()}</span>
+                    <div className="gh-stat-tile">
+                      <span className="gh-stat-tile-label"><Users size={11} /> Followers</span>
+                      <span className="gh-stat-tile-value">{profileData?.followers}</span>
                     </div>
-
-                    <div className="gh-stat-row">
-                      <span className="gh-stat-label">
-                        <Users size={13} />
-                        Followers
-                      </span>
-                      <span className="gh-stat-value">{profileData?.followers}</span>
-                    </div>
-
-                    <div className="gh-stat-row">
-                      <span className="gh-stat-label">
-                        <Users size={13} />
-                        Following
-                      </span>
-                      <span className="gh-stat-value">{profileData?.following}</span>
+                    <div className="gh-stat-tile">
+                      <span className="gh-stat-tile-label"><Users size={11} /> Following</span>
+                      <span className="gh-stat-tile-value">{profileData?.following}</span>
                     </div>
                   </div>
 
                   {/* ── QUICK LINKS ── */}
-                  <div className="gh-section">
-                    <div className="gh-section-header">
-                      <Link size={13} style={{ color: "#38bdf8" }} />
-                      <span>Quick Links</span>
-                    </div>
-
+                  <div className="gh-label">
+                    <Link size={12} />
+                    Quick Links
+                  </div>
+                  <div className="gh-link-grid">
                     <a
                       href={profileData?.html_url}
                       target="_blank"
@@ -502,29 +532,28 @@ export default function GitHubProfile() {
                   </div>
 
                   {/* ── ACCOUNT INFO ── */}
-                  <div className="gh-section">
-                    <div className="gh-section-header">
-                      <Briefcase size={13} style={{ color: "#38bdf8" }} />
-                      <span>Account Info</span>
-                    </div>
-
-                    <div className="gh-account-row">
-                      <span className="gh-account-label">Account Type</span>
-                      <span className="gh-account-value" style={{ textTransform: "capitalize" }}>
+                  <div className="gh-label">
+                    <Briefcase size={12} />
+                    Account Info
+                  </div>
+                  <div className="gh-account-grid">
+                    <div className="gh-account-chip">
+                      <span className="gh-account-chip-label">Type</span>
+                      <span className="gh-account-chip-value" style={{ textTransform: "capitalize" }}>
                         {profileData?.type || "User"}
                       </span>
                     </div>
-                    <div className="gh-account-row">
-                      <span className="gh-account-label">Site Admin</span>
+                    <div className="gh-account-chip">
+                      <span className="gh-account-chip-label">Admin</span>
                       <span
-                        className="gh-account-value"
-                        style={{ color: profileData?.site_admin ? "#fbbf24" : "#475569" }}>
+                        className="gh-account-chip-value"
+                        style={{ color: profileData?.site_admin ? "#fbbf24" : "#cbd5e1" }}>
                         {profileData?.site_admin ? "Yes" : "No"}
                       </span>
                     </div>
-                    <div className="gh-account-row">
-                      <span className="gh-account-label">User ID</span>
-                      <span className="gh-account-value" style={{ color: "#38bdf8" }}>
+                    <div className="gh-account-chip">
+                      <span className="gh-account-chip-label">ID</span>
+                      <span className="gh-account-chip-value" style={{ color: "#38bdf8" }}>
                         #{profileData?.id}
                       </span>
                     </div>
@@ -532,7 +561,7 @@ export default function GitHubProfile() {
                 </div>
               </div>
 
-              {/* ── RIGHT CONTENT ── */}
+              {/* ── CONTENT ── */}
               <div className="gh-content">
                 <GitHubRepo />
               </div>

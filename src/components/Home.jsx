@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import HeroImage from "../assets/mypic.jpg";
+import HeroImage from "../assets/mypic.png";
 
 const skillCategories = {
   frontend: ["React", "Next.js", "TypeScript", "Tailwind", "Redux"],
@@ -331,7 +331,7 @@ const Home = () => {
             <hr className="port-divider" />
 
             <motion.a
-              href="https://drive.google.com/file/d/1RwbGzniiZd69aYBvpLUYeeh4ZtIqPGGE/view?usp=sharing"
+              href="https://drive.google.com/file/d/1-quvJP4Yn3HzbJKAeVGXf2BebbImPoxF/view"
               target="_blank"
               rel="noreferrer"
               className="port-cta"
