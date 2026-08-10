@@ -26,7 +26,7 @@ const AddProjects = () => {
             {/* terminal-style heading */}
             <div className="mb-10">
               <p className="font-mono text-xs tracking-[0.2em] uppercase text-violet-400/80 mb-3">
-                // work
+                 work
               </p>
               <h2 className="font-mono text-3xl sm:text-4xl font-bold text-zinc-100">
                 <span className="text-zinc-600">$</span> projects{" "}
