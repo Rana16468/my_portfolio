@@ -6,6 +6,16 @@ import ErrorPage from "./ErrorPage";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
+/*
+  NOTE: This component expects the Syne + Inter Google Fonts to be loaded
+  globally (e.g. in public/index.html <head>), not injected at runtime:
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  Loading fonts via a <style> tag inside the component caused a flash of
+  unstyled text and re-injected the tag on every render.
+*/
 
 const Particle = ({ style }) => (
   <motion.div
@@ -24,7 +34,6 @@ const Particle = ({ style }) => (
     }}
   />
 );
-
 
 const GridLines = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -134,7 +143,7 @@ const PageNumber = ({ number, active, onClick }) => (
 
 /* ─── Project Card ───────────────────────────────────────────────── */
 const ProjectCard = ({ project, index }) => {
-  const { _id, src, demo, code, server } = project;
+  const { _id, src, demo, code, server, title, name } = project;
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -158,7 +167,7 @@ const ProjectCard = ({ project, index }) => {
       <div className="relative w-full h-40 sm:h-48 md:h-52 overflow-hidden">
         <motion.img
           src={src}
-          alt="Project Preview"
+          alt={title || name || "Project preview"}
           className="w-full h-full object-cover"
           animate={{ scale: hovered ? 1.08 : 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -261,6 +270,7 @@ const ProjectCard = ({ project, index }) => {
         </div>
 
         {/* Details CTA */}
+        <br/>
         <Link to={`/project_details/${_id}`}>
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -271,7 +281,6 @@ const ProjectCard = ({ project, index }) => {
               border: "1px solid rgba(99,179,237,0.25)",
               boxShadow: hovered ? "0 0 20px rgba(14,165,233,0.2)" : "none",
               transition: "box-shadow 0.3s",
-              margin: "6px"
             }}
           >
             View Project Details →
@@ -332,8 +341,7 @@ const Portfolio = () => {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorPage />;
 
-  // ── FIX ──────────────────────────────────────────────────────────
-  // The API response shape is:
+  // ── API response shape ──────────────────────────────────────────
   // { success, message, data: { meta: { page, limit, total, totalPage }, data: [...] } }
   // so the actual project array lives at allprojects.data.data,
   // and pagination info lives at allprojects.data.meta.
@@ -549,17 +557,12 @@ const Portfolio = () => {
               </PageButton>
             </div>
 
-            <p className="text-xs text-sky-500/60">
+            <p className="text-xs text-sky-400/80">
               Showing page {page} of {totalPages} · {totalCount} project{totalCount === 1 ? "" : "s"} total
             </p>
           </motion.div>
         )}
       </div>
-
-      {/* ── Google Font Import ── */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@400;500;600&display=swap');
-      `}</style>
     </div>
   );
 };

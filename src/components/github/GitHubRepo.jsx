@@ -73,7 +73,7 @@ function DailyCommitGraph({ year, repoCount, isMobile }) {
   const svgHeight = 7 * unit - gap;
 
   return (
-    <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
+    <div className="thin-scroll" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}>
       <div style={{ minWidth: svgWidth }}>
         <div style={{ position: 'relative', height: 16, marginBottom: 4, minWidth: svgWidth }}>
           {monthLabels.map(({ label, col }) => (
@@ -113,37 +113,94 @@ function DailyCommitGraph({ year, repoCount, isMobile }) {
   );
 }
 
-// ── Language Bar ─────────────────────────────────────────────────────────────
+// ── Language Bar (fixed: clipped pill bar + scrollable legend, can't overflow) ─
 function LanguageBar({ langStats, isMobile }) {
-  if (!langStats.length) return <span style={{ color: '#8b949e', fontSize: 11 }}>No data</span>;
+  const [hoverIdx, setHoverIdx] = useState(null);
+
+  if (!langStats.length) {
+    return <span style={{ color: '#8b949e', fontSize: 11 }}>No language data yet</span>;
+  }
+
   return (
-    <>
-      <div style={{ height: 7, borderRadius: 5, overflow: 'hidden', display: 'flex', marginBottom: 8 }}>
-        {langStats.map(l => (
-          <div key={l.name} style={{ width: `${l.pct}%`, background: l.color, height: '100%' }} title={`${l.name} ${l.pct}%`} />
+    <div style={{ width: '100%', minWidth: 0 }}>
+      {/* Slim pill bar — border-boxed & overflow-clipped so it can never spill past the card */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: 8,
+          borderRadius: 999,
+          overflow: 'hidden',
+          display: 'flex',
+          background: '#0d1117',
+          border: '1px solid #21262d',
+          boxSizing: 'border-box',
+        }}
+      >
+        {langStats.map((l, i) => (
+          <div
+            key={l.name}
+            onMouseEnter={() => setHoverIdx(i)}
+            onMouseLeave={() => setHoverIdx(null)}
+            title={`${l.name} · ${l.pct}%`}
+            style={{
+              width: `${l.pct}%`,
+              minWidth: l.pct > 0 ? 2 : 0,
+              height: '100%',
+              background: l.color,
+              filter: hoverIdx === null || hoverIdx === i ? 'brightness(1)' : 'brightness(0.55)',
+              transition: 'filter 0.15s ease',
+              borderRight: i < langStats.length - 1 ? '1px solid #0d1117' : 'none',
+              boxSizing: 'border-box',
+              flexShrink: 0,
+            }}
+          />
         ))}
       </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr',
-        gap: isMobile ? '4px 12px' : 5,
-      }}>
-        {langStats.slice(0, isMobile ? 8 : 8).map(l => (
-          <div key={l.name} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11 }}>
+
+      {/* Scrollable legend row — horizontally scrolls instead of ever overflowing the card */}
+      <div
+        className="thin-scroll"
+        style={{
+          display: 'flex',
+          gap: 14,
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          marginTop: 10,
+          paddingBottom: 6,
+        }}
+      >
+        {langStats.map((l, i) => (
+          <div
+            key={l.name}
+            onMouseEnter={() => setHoverIdx(i)}
+            onMouseLeave={() => setHoverIdx(null)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 11,
+              flexShrink: 0,
+              opacity: hoverIdx === null || hoverIdx === i ? 1 : 0.5,
+              transition: 'opacity 0.15s ease',
+              cursor: 'default',
+            }}
+          >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ color: '#e6edf3', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name}</span>
+            <span style={{ color: '#e6edf3', whiteSpace: 'nowrap' }}>{l.name}</span>
             <span style={{ color: '#8b949e', fontFamily: 'monospace', fontSize: 10 }}>{l.pct}%</span>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 // ── Sidebar Card ─────────────────────────────────────────────────────────────
 function SideCard({ title, children }) {
   return (
-    <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 14px', marginBottom: 0 }}>
+    <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 14px', marginBottom: 0, minWidth: 0, overflow: 'hidden' }}>
       <div style={{ fontSize: 12, fontWeight: 600, color: '#e6edf3', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title}</div>
       {children}
     </div>
@@ -400,6 +457,11 @@ export default function GitHubRepo() {
         .nav-link{background:none;border:none;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:inherit;transition:color .15s}
         .nav-link:hover{color:#e6edf3}
         .stat-pill{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:7px;flex:1;min-width:80px}
+        .thin-scroll{scrollbar-width:thin;scrollbar-color:#30363d transparent}
+        .thin-scroll::-webkit-scrollbar{height:6px}
+        .thin-scroll::-webkit-scrollbar-track{background:transparent}
+        .thin-scroll::-webkit-scrollbar-thumb{background:#30363d;border-radius:999px}
+        .thin-scroll::-webkit-scrollbar-thumb:hover{background:#484f58}
       `}</style>
 
       {/* ── Header ── */}
@@ -488,7 +550,7 @@ export default function GitHubRepo() {
       </div>
 
       {/* ── Tabs ── */}
-      <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', overflowX: 'auto' }}>
+      <div className="thin-scroll" style={{ background: '#0d1117', borderBottom: '1px solid #21262d', overflowX: 'auto' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 12px', display: 'flex', minWidth: 'max-content' }}>
           {tabs.map(tab => (
             <button key={tab} className={`gh-tab${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}
