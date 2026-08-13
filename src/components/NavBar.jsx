@@ -37,6 +37,8 @@ const NavBar = () => {
     { id: 9, link: "contact",    label: "Contact",    num: "09" },
   ];
 
+  
+
   return (
     <>
       <style>{`
