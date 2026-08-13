@@ -1,7 +1,7 @@
 import { MapPin, Globe, Calendar, Users, Archive, Star, GitBranch, Activity, Mail, Twitter, Building2, Briefcase, Link, BookOpen, Code2, BadgeCheck } from "lucide-react";
 import LoadingSpinner from "../LoadingSpinner";
-import ErrorPage from "../ErrorPage";
-import toast from "react-hot-toast";
+// import ErrorPage from "../ErrorPage";
+// import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import GitHubRepo from "./GitHubRepo";
 
@@ -303,11 +303,33 @@ const styles = `
   ::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 4px; }
 `;
 
+// Default fallback data for when API fails
+const DEFAULT_PROFILE_DATA = {
+  avatar_url: "https://via.placeholder.com/64",
+  login: "rana16468",
+  name: "Developer",
+  bio: "GitHub profile data unavailable",
+  company: null,
+  location: "Not specified",
+  email: null,
+  twitter_username: null,
+  blog: null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  public_repos: 0,
+  public_gists: 0,
+  followers: 0,
+  following: 0,
+  html_url: "https://github.com/rana16468",
+  site_admin: false,
+  type: "User",
+  id: 0,
+};
+
 export default function GitHubProfile() {
   const {
-    data: profileData = [],
+    data: profileData = DEFAULT_PROFILE_DATA,
     isLoading,
-    error,
   } = useQuery({
     queryKey: ["myGitProfile"],
     queryFn: async () => {
@@ -316,22 +338,18 @@ export default function GitHubProfile() {
           method: "GET",
         });
         if (!res.ok) {
-          throw new Error("Network response was not ok");
+          return DEFAULT_PROFILE_DATA;
         }
         const data = await res.json();
         return data;
       } catch (error) {
-        toast.error(`Failed to fetch profile: ${error?.message}`);
+        return DEFAULT_PROFILE_DATA;
       }
     },
   });
 
   if (isLoading) {
     return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return <ErrorPage />;
   }
 
   const formatDate = (dateString) => {
