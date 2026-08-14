@@ -8,9 +8,16 @@ const LANG_COLORS = {
   'Jupyter Notebook': '#DA5B0B', Dart: '#00B4AB', Swift: '#F05138',
 };
 
-const GH_COLORS = ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'];
+const GH_COLORS = ['#0a1a4d', '#123a8f', '#1957c2', '#2f7de0', '#5fa8ff'];
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const GITHUB_USER = 'Rana16468';
+
+const BG = '131F38';        // page background — deep navy (blue-900 family)
+const CARD_BG = '131F38';   // card background — slightly lighter navy
+const BORDER = '#2f4fa8';    // card border — matching blue
+const BORDER_HOVER = '#5fa8ff';
+const TEXT = '131F38';
+const MUTED = '131F38';
 
 function fmtDate(d) {
   if (!d) return 'N/A';
@@ -79,7 +86,7 @@ function DailyCommitGraph({ year, repoCount, isMobile }) {
           {monthLabels.map(({ label, col }) => (
             <span key={label} style={{
               position: 'absolute', left: col * unit,
-              fontSize: isMobile ? 9 : 10, color: '#8b949e', fontFamily: 'monospace', whiteSpace: 'nowrap',
+              fontSize: isMobile ? 9 : 10, color: MUTED, fontFamily: 'monospace', whiteSpace: 'nowrap',
             }}>{label}</span>
           ))}
         </div>
@@ -95,16 +102,16 @@ function DailyCommitGraph({ year, repoCount, isMobile }) {
             const label = `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${lvl} commit${lvl !== 1 ? 's' : ''}`;
             return (
               <rect key={i} x={x} y={y} width={cellSize} height={cellSize} rx={2}
-                fill={GH_COLORS[lvl]} stroke={lvl === 0 ? '#21262d' : 'none'} strokeWidth={1}>
+                fill={GH_COLORS[lvl]} stroke={lvl === 0 ? BORDER : 'none'} strokeWidth={1}>
                 <title>{label}</title>
               </rect>
             );
           })}
         </svg>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 8, justifyContent: 'flex-end', fontSize: 10, color: '#8b949e' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 8, justifyContent: 'flex-end', fontSize: 10, color: MUTED }}>
           <span>Less</span>
           {GH_COLORS.map((c, i) => (
-            <div key={i} style={{ width: 10, height: 10, borderRadius: 2, background: c, border: i === 0 ? '1px solid #21262d' : 'none', flexShrink: 0 }} />
+            <div key={i} style={{ width: 10, height: 10, borderRadius: 2, background: c, border: i === 0 ? `1px solid ${BORDER}` : 'none', flexShrink: 0 }} />
           ))}
           <span>More</span>
         </div>
@@ -113,12 +120,12 @@ function DailyCommitGraph({ year, repoCount, isMobile }) {
   );
 }
 
-// ── Language Bar (fixed: clipped pill bar + scrollable legend, can't overflow) ─
+// ── Language Bar (fixed column-grid legend, can't overflow) ─────────────────
 function LanguageBar({ langStats, isMobile }) {
   const [hoverIdx, setHoverIdx] = useState(null);
 
   if (!langStats.length) {
-    return <span style={{ color: '#8b949e', fontSize: 11 }}>No language data yet</span>;
+    return <span style={{ color: MUTED, fontSize: 11 }}>No language data yet</span>;
   }
 
   return (
@@ -132,8 +139,8 @@ function LanguageBar({ langStats, isMobile }) {
           borderRadius: 999,
           overflow: 'hidden',
           display: 'flex',
-          background: '#0d1117',
-          border: '1px solid #21262d',
+          background: BG,
+          border: `1px solid ${BORDER}`,
           boxSizing: 'border-box',
         }}
       >
@@ -150,7 +157,7 @@ function LanguageBar({ langStats, isMobile }) {
               background: l.color,
               filter: hoverIdx === null || hoverIdx === i ? 'brightness(1)' : 'brightness(0.55)',
               transition: 'filter 0.15s ease',
-              borderRight: i < langStats.length - 1 ? '1px solid #0d1117' : 'none',
+              borderRight: i < langStats.length - 1 ? `1px solid ${BG}` : 'none',
               boxSizing: 'border-box',
               flexShrink: 0,
             }}
@@ -158,17 +165,16 @@ function LanguageBar({ langStats, isMobile }) {
         ))}
       </div>
 
-      {/* Scrollable legend row — horizontally scrolls instead of ever overflowing the card */}
+      {/* Legend — fixed-size column grid instead of a scrolling row, so each
+          language sits in its own consistently-sized cell and wraps cleanly */}
       <div
-        className="thin-scroll"
         style={{
-          display: 'flex',
-          gap: 14,
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          WebkitOverflowScrolling: 'touch',
+          display: 'grid',
+          gridTemplateColumns: isMobile
+            ? 'repeat(auto-fill, minmax(92px, 1fr))'
+            : 'repeat(auto-fill, minmax(110px, 1fr))',
+          gap: '8px 10px',
           marginTop: 10,
-          paddingBottom: 6,
         }}
       >
         {langStats.map((l, i) => (
@@ -181,15 +187,15 @@ function LanguageBar({ langStats, isMobile }) {
               alignItems: 'center',
               gap: 6,
               fontSize: 11,
-              flexShrink: 0,
+              minWidth: 0,
               opacity: hoverIdx === null || hoverIdx === i ? 1 : 0.5,
               transition: 'opacity 0.15s ease',
               cursor: 'default',
             }}
           >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color, flexShrink: 0 }} />
-            <span style={{ color: '#e6edf3', whiteSpace: 'nowrap' }}>{l.name}</span>
-            <span style={{ color: '#8b949e', fontFamily: 'monospace', fontSize: 10 }}>{l.pct}%</span>
+            <span style={{ color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.name}</span>
+            <span style={{ color: MUTED, fontFamily: 'monospace', fontSize: 10, flexShrink: 0 }}>{l.pct}%</span>
           </div>
         ))}
       </div>
@@ -200,8 +206,8 @@ function LanguageBar({ langStats, isMobile }) {
 // ── Sidebar Card ─────────────────────────────────────────────────────────────
 function SideCard({ title, children }) {
   return (
-    <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: '12px 14px', marginBottom: 0, minWidth: 0, overflow: 'hidden' }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#e6edf3', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title}</div>
+    <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: '12px 14px', marginBottom: 0, minWidth: 0, overflow: 'hidden' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: TEXT, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title}</div>
       {children}
     </div>
   );
@@ -217,7 +223,7 @@ function RepoCard({ repo, isMobile }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: '#161b22', border: `1px solid ${hovered ? '#388bfd' : '#21262d'}`,
+        background: CARD_BG, border: `1px solid ${hovered ? BORDER_HOVER : BORDER}`,
         borderRadius: 10, padding: isMobile ? '12px 12px' : '14px 16px', transition: 'border-color 0.2s',
       }}
     >
@@ -231,11 +237,11 @@ function RepoCard({ repo, isMobile }) {
             {repo.name}
           </a>
           {repo.private
-            ? <span style={{ fontSize: 10, border: '1px solid #8b949e', color: '#8b949e', borderRadius: 10, padding: '1px 6px', flexShrink: 0 }}>Private</span>
+            ? <span style={{ fontSize: 10, border: `1px solid ${MUTED}`, color: MUTED, borderRadius: 10, padding: '1px 6px', flexShrink: 0 }}>Private</span>
             : <span style={{ fontSize: 10, border: '1px solid #58a6ff', color: '#58a6ff', borderRadius: 10, padding: '1px 6px', flexShrink: 0 }}>Public</span>
           }
         </div>
-        <a href={repo.html_url} target="_blank" rel="noreferrer" style={{ color: '#8b949e', flexShrink: 0, marginLeft: 8 }}>
+        <a href={repo.html_url} target="_blank" rel="noreferrer" style={{ color: MUTED, flexShrink: 0, marginLeft: 8 }}>
           <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
             <path d="M10.604 1h4.146a.25.25 0 01.25.25v4.146a.25.25 0 01-.427.177L13.03 4.03 9.28 7.78a.75.75 0 01-1.06-1.06l3.75-3.75-1.543-1.543A.25.25 0 0110.604 1zM3.75 2A1.75 1.75 0 002 3.75v8.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 12.25v-3.5a.75.75 0 00-1.5 0v3.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-8.5a.25.25 0 01.25-.25h3.5a.75.75 0 000-1.5h-3.5z" />
           </svg>
@@ -243,7 +249,7 @@ function RepoCard({ repo, isMobile }) {
       </div>
 
       {repo.description && (
-        <p style={{ color: '#8b949e', fontSize: 12, lineHeight: 1.5, margin: '0 0 8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+        <p style={{ color: MUTED, fontSize: 12, lineHeight: 1.5, margin: '0 0 8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
           {repo.description}
         </p>
       )}
@@ -251,12 +257,12 @@ function RepoCard({ repo, isMobile }) {
       {repo.topics?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
           {repo.topics.slice(0, isMobile ? 3 : 4).map(t => (
-            <span key={t} style={{ background: '#1f3446', color: '#58a6ff', fontSize: 10, borderRadius: 10, padding: '2px 7px' }}>{t}</span>
+            <span key={t} style={{ background: '#132d6e', color: '#7fb3ff', fontSize: 10, borderRadius: 10, padding: '2px 7px' }}>{t}</span>
           ))}
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 8 : 12, fontSize: 11, color: '#8b949e' }}>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 8 : 12, fontSize: 11, color: MUTED }}>
         {repo.language && (
           <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 9, height: 9, borderRadius: '50%', background: lc, display: 'inline-block' }} />
@@ -277,20 +283,20 @@ function RepoCard({ repo, isMobile }) {
 
 function LoadingSpinner() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-      <div style={{ width: 40, height: 40, border: '3px solid #21262d', borderTopColor: '#58a6ff', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+    <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
+      <div style={{ width: 40, height: 40, border: `3px solid ${BORDER}`, borderTopColor: '#58a6ff', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <span style={{ color: '#8b949e', fontSize: 14 }}>Loading profile…</span>
+      <span style={{ color: MUTED, fontSize: 14 }}>Loading profile…</span>
     </div>
   );
 }
 
 function ErrorPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+    <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
       <span style={{ fontSize: 36 }}>⚠️</span>
       <span style={{ color: '#f85149', fontSize: 18, fontWeight: 600 }}>Failed to load data</span>
-      <span style={{ color: '#8b949e', fontSize: 14 }}>Check your network or try again later.</span>
+      <span style={{ color: MUTED, fontSize: 14 }}>Check your network or try again later.</span>
     </div>
   );
 }
@@ -403,16 +409,16 @@ export default function GitHubRepo() {
       <SideCard title="Quick Stats">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
           {[
-            ['Issues', totalIssues, '#e6edf3'],
-            ['Repos', repos.length, '#e6edf3'],
+            ['Issues', totalIssues, TEXT],
+            ['Repos', repos.length, TEXT],
             ['Stars', totalStars, '#d29922'],
             ['Forks', totalForks, '#58a6ff'],
             ['Followers', profile.followers, '#2ea043'],
             ['Following', profile.following, '#bc8cff'],
           ].map(([label, value, color]) => (
-            <div key={label} style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 7, padding: '8px 6px', textAlign: 'center' }}>
+            <div key={label} style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 7, padding: '8px 6px', textAlign: 'center' }}>
               <div style={{ fontSize: 15, fontWeight: 700, color, fontFamily: 'monospace', lineHeight: 1 }}>{value}</div>
-              <div style={{ fontSize: 9, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>{label}</div>
+              <div style={{ fontSize: 9, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>{label}</div>
             </div>
           ))}
         </div>
@@ -420,55 +426,55 @@ export default function GitHubRepo() {
 
       {/* Streak */}
       <SideCard title="Streak Info">
-        <div style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 7, padding: '10px 8px', textAlign: 'center', marginBottom: 6 }}>
+        <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 7, padding: '10px 8px', textAlign: 'center', marginBottom: 6 }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#fd8c73', fontFamily: 'monospace' }}>🔥 N/A</div>
-          <div style={{ fontSize: 10, color: '#8b949e', marginTop: 2 }}>Current Streak</div>
+          <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>Current Streak</div>
           <div style={{ fontSize: 9, color: '#58a6ff', marginTop: 1, fontFamily: 'monospace' }}>Requires auth</div>
         </div>
-        <div style={{ background: '#0d1117', border: '1px solid #21262d', borderRadius: 7, padding: '10px 8px', textAlign: 'center' }}>
+        <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: 7, padding: '10px 8px', textAlign: 'center' }}>
           <div style={{ fontSize: 17, fontWeight: 700, color: '#d29922', fontFamily: 'monospace' }}>N/A</div>
-          <div style={{ fontSize: 10, color: '#8b949e', marginTop: 2 }}>Longest Streak</div>
+          <div style={{ fontSize: 10, color: MUTED, marginTop: 2 }}>Longest Streak</div>
           <div style={{ fontSize: 9, color: '#58a6ff', marginTop: 1, fontFamily: 'monospace' }}>Requires auth</div>
         </div>
-        <div style={{ fontSize: 9, color: '#484f58', marginTop: 6, textAlign: 'center', lineHeight: 1.4 }}>Auth required — not available via public API.</div>
+        <div style={{ fontSize: 9, color: '#6478b5', marginTop: 6, textAlign: 'center', lineHeight: 1.4 }}>Auth required — not available via public API.</div>
       </SideCard>
     </div>
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1117', color: '#e6edf3', fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: BG, color: TEXT, fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
-        .yr-btn{background:#161b22;border:1px solid #21262d;color:#8b949e;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s;white-space:nowrap}
-        .yr-btn.active{background:#1f6feb;border-color:#388bfd;color:#fff;font-weight:600}
-        .yr-btn:hover:not(.active){border-color:#8b949e;color:#e6edf3}
-        .mo-btn{background:#161b22;border:1px solid #21262d;color:#8b949e;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s;white-space:nowrap}
-        .mo-btn.active{background:#1f6feb;border-color:#388bfd;color:#fff;font-weight:600}
-        .mo-btn:hover:not(.active){border-color:#8b949e;color:#e6edf3}
-        .pg-btn{width:32px;height:32px;border-radius:7px;border:1px solid #21262d;background:#161b22;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#58a6ff;transition:background .15s}
-        .pg-btn:disabled{color:#484f58;cursor:not-allowed}
-        .pg-btn:not(:disabled):hover{background:#21262d}
-        .pg-num{width:32px;height:32px;border-radius:7px;border:1px solid #21262d;background:#161b22;color:#c9d1d9;cursor:pointer;font-size:12px;font-family:inherit;transition:background .15s}
-        .pg-num:hover:not(.active){background:#21262d}
-        .pg-num.active{background:#1f6feb;color:#fff;font-weight:700;border-color:#388bfd}
-        .gh-tab{padding:10px 12px;background:none;border:none;border-bottom:2px solid transparent;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;transition:color .2s;font-family:inherit}
+        .yr-btn{background:${CARD_BG};border:1px solid ${BORDER};color:${MUTED};border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .2s;white-space:nowrap}
+        .yr-btn.active{background:#1f6feb;border-color:#5fa8ff;color:#fff;font-weight:600}
+        .yr-btn:hover:not(.active){border-color:#5fa8ff;color:#e6edf3}
+        .mo-btn{background:${CARD_BG};border:1px solid ${BORDER};color:${MUTED};border-radius:6px;padding:4px 8px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s;white-space:nowrap}
+        .mo-btn.active{background:#1f6feb;border-color:#5fa8ff;color:#fff;font-weight:600}
+        .mo-btn:hover:not(.active){border-color:#5fa8ff;color:#e6edf3}
+        .pg-btn{width:32px;height:32px;border-radius:7px;border:1px solid ${BORDER};background:${CARD_BG};cursor:pointer;display:flex;align-items:center;justify-content:center;color:#58a6ff;transition:background .15s}
+        .pg-btn:disabled{color:#465080;cursor:not-allowed}
+        .pg-btn:not(:disabled):hover{background:#16224f}
+        .pg-num{width:32px;height:32px;border-radius:7px;border:1px solid ${BORDER};background:${CARD_BG};color:#c9d1d9;cursor:pointer;font-size:12px;font-family:inherit;transition:background .15s}
+        .pg-num:hover:not(.active){background:#16224f}
+        .pg-num.active{background:#1f6feb;color:#fff;font-weight:700;border-color:#5fa8ff}
+        .gh-tab{padding:10px 12px;background:none;border:none;border-bottom:2px solid transparent;color:${MUTED};cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;transition:color .2s;font-family:inherit}
         .gh-tab.active{border-bottom-color:#fd8c73;color:#e6edf3}
         .gh-tab:hover:not(.active){color:#e6edf3}
-        .nav-link{background:none;border:none;color:#8b949e;cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:inherit;transition:color .15s}
+        .nav-link{background:none;border:none;color:${MUTED};cursor:pointer;font-size:13px;font-weight:500;padding:0;font-family:inherit;transition:color .15s}
         .nav-link:hover{color:#e6edf3}
-        .stat-pill{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:7px;flex:1;min-width:80px}
-        .thin-scroll{scrollbar-width:thin;scrollbar-color:#30363d transparent}
+        .stat-pill{background:${CARD_BG};border:1px solid ${BORDER};border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:7px;flex:1;min-width:80px}
+        .thin-scroll{scrollbar-width:thin;scrollbar-color:${BORDER} transparent}
         .thin-scroll::-webkit-scrollbar{height:6px}
         .thin-scroll::-webkit-scrollbar-track{background:transparent}
-        .thin-scroll::-webkit-scrollbar-thumb{background:#30363d;border-radius:999px}
-        .thin-scroll::-webkit-scrollbar-thumb:hover{background:#484f58}
+        .thin-scroll::-webkit-scrollbar-thumb{background:${BORDER};border-radius:999px}
+        .thin-scroll::-webkit-scrollbar-thumb:hover{background:#5fa8ff}
       `}</style>
 
       {/* ── Header ── */}
-      <header style={{ background: '#161b22', borderBottom: '1px solid #21262d', position: 'sticky', top: 0, zIndex: 100 }}>
+      <header style={{ background: CARD_BG, borderBottom: `1px solid ${BORDER}`, position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px', height: 50, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="#8b949e">
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="#93a4d1">
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
             </svg>
             <span style={{ fontSize: 16, fontWeight: 700 }}>GitHub</span>
@@ -482,7 +488,7 @@ export default function GitHubRepo() {
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {isMobile && (
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8b949e', padding: 4, display: 'flex', alignItems: 'center' }}
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: MUTED, padding: 4, display: 'flex', alignItems: 'center' }}
                 onClick={() => setMobileNavOpen(o => !o)}>
                 {mobileNavOpen
                   ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -490,36 +496,36 @@ export default function GitHubRepo() {
                 }
               </button>
             )}
-            <img src={profile.avatar_url} alt={profile.login} style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid #21262d', objectFit: 'cover' }} />
+            <img src={profile.avatar_url} alt={profile.login} style={{ width: 30, height: 30, borderRadius: '50%', border: `2px solid ${BORDER}`, objectFit: 'cover' }} />
           </div>
         </div>
         {mobileNavOpen && isMobile && (
-          <div style={{ display: 'flex', flexDirection: 'column', background: '#161b22', borderTop: '1px solid #21262d', padding: '6px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', background: CARD_BG, borderTop: `1px solid ${BORDER}`, padding: '6px 0' }}>
             {['Pull requests', 'Issues', 'Marketplace', 'Explore'].map(item => (
-              <button key={item} style={{ background: 'none', border: 'none', color: '#8b949e', textAlign: 'left', padding: '10px 20px', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>{item}</button>
+              <button key={item} style={{ background: 'none', border: 'none', color: MUTED, textAlign: 'left', padding: '10px 20px', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>{item}</button>
             ))}
           </div>
         )}
       </header>
 
       {/* ── Profile Hero ── */}
-      <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', padding: isMobile ? '16px 12px' : '22px 16px' }}>
+      <div style={{ background: BG, borderBottom: `1px solid ${BORDER}`, padding: isMobile ? '16px 12px' : '22px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 12 : 18, alignItems: isMobile ? 'center' : 'flex-start', textAlign: isMobile ? 'center' : 'left' }}>
             <div style={{ position: 'relative', flexShrink: 0 }}>
               <img src={profile.avatar_url} alt={profile.name || profile.login}
-                style={{ width: isMobile ? 70 : 80, height: isMobile ? 70 : 80, borderRadius: '50%', border: '3px solid #21262d', objectFit: 'cover', display: 'block' }} />
-              <div style={{ position: 'absolute', bottom: 4, right: 4, width: 14, height: 14, background: '#2ea043', borderRadius: '50%', border: '2px solid #0d1117' }} />
+                style={{ width: isMobile ? 70 : 80, height: isMobile ? 70 : 80, borderRadius: '50%', border: `3px solid ${BORDER}`, objectFit: 'cover', display: 'block' }} />
+              <div style={{ position: 'absolute', bottom: 4, right: 4, width: 14, height: 14, background: '#2ea043', borderRadius: '50%', border: `2px solid ${BG}` }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: isMobile ? 18 : 20, fontWeight: 700 }}>{profile.name || profile.login}</div>
-              <div style={{ fontSize: 13, color: '#8b949e', fontFamily: 'monospace', margin: '2px 0 6px' }}>@{profile.login}</div>
-              {profile.bio && <div style={{ fontSize: 12, color: '#8b949e', lineHeight: 1.6, maxWidth: 480 }}>{profile.bio}</div>}
+              <div style={{ fontSize: 13, color: MUTED, fontFamily: 'monospace', margin: '2px 0 6px' }}>@{profile.login}</div>
+              {profile.bio && <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.6, maxWidth: 480 }}>{profile.bio}</div>}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, justifyContent: isMobile ? 'center' : 'flex-start' }}>
-                {profile.location && <span style={{ fontSize: 11, color: '#8b949e' }}>📍 {profile.location}</span>}
-                {memberYear && <span style={{ fontSize: 11, color: '#8b949e' }}>📅 Joined {memberYear}</span>}
-                <span style={{ fontSize: 11, color: '#8b949e' }}>📦 {repos.length} repos</span>
-                <span style={{ fontSize: 11, color: '#8b949e' }}>👥 {profile.followers} followers · {profile.following} following</span>
+                {profile.location && <span style={{ fontSize: 11, color: MUTED }}>📍 {profile.location}</span>}
+                {memberYear && <span style={{ fontSize: 11, color: MUTED }}>📅 Joined {memberYear}</span>}
+                <span style={{ fontSize: 11, color: MUTED }}>📦 {repos.length} repos</span>
+                <span style={{ fontSize: 11, color: MUTED }}>👥 {profile.followers} followers · {profile.following} following</span>
                 {profile.blog && (
                   <a href={profile.blog.startsWith('http') ? profile.blog : `https://${profile.blog}`} target="_blank" rel="noreferrer"
                     style={{ fontSize: 11, color: '#58a6ff', textDecoration: 'none' }}>🔗 {profile.blog}</a>
@@ -531,7 +537,7 @@ export default function GitHubRepo() {
       </div>
 
       {/* ── Stats Bar ── */}
-      <div style={{ background: '#0d1117', borderBottom: '1px solid #21262d', padding: isMobile ? '10px 12px' : '10px 16px' }}>
+      <div style={{ background: BG, borderBottom: `1px solid ${BORDER}`, padding: isMobile ? '10px 12px' : '10px 16px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)', gap: 6 }}>
           {[
             { icon: '▣', label: 'Repos', value: repos.length, color: '#2ea043' },
@@ -543,14 +549,14 @@ export default function GitHubRepo() {
           ].map(s => (
             <div key={s.label} className="stat-pill" style={{ justifyContent: 'center', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '8px 4px', gap: 3 }}>
               <div style={{ fontSize: isMobile ? 13 : 15, fontWeight: 700, color: s.color, fontFamily: 'monospace', lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: 9, color: '#8b949e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+              <div style={{ fontSize: 9, color: MUTED, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── Tabs ── */}
-      <div className="thin-scroll" style={{ background: '#0d1117', borderBottom: '1px solid #21262d', overflowX: 'auto' }}>
+      <div className="thin-scroll" style={{ background: BG, borderBottom: `1px solid ${BORDER}`, overflowX: 'auto' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 12px', display: 'flex', minWidth: 'max-content' }}>
           {tabs.map(tab => (
             <button key={tab} className={`gh-tab${activeTab === tab ? ' active' : ''}`} onClick={() => setActiveTab(tab)}
@@ -588,39 +594,39 @@ export default function GitHubRepo() {
           <main style={{ minWidth: 0 }}>
 
             {/* ── Daily Commit Graph ── */}
-            <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: isMobile ? '12px 10px' : '14px 16px', marginBottom: 14 }}>
+            <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '12px 10px' : '14px 16px', marginBottom: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 4 }}>
-                <span style={{ fontSize: isMobile ? 12 : 13, color: '#8b949e' }}>
+                <span style={{ fontSize: isMobile ? 12 : 13, color: MUTED }}>
                   Daily commit activity —{' '}
-                  <strong style={{ color: '#e6edf3' }}>{graphYear}</strong>
+                  <strong style={{ color: TEXT }}>{graphYear}</strong>
                 </span>
-                {!isMobile && <span style={{ fontSize: 11, color: '#484f58', fontFamily: 'monospace' }}>simulated · auth required for real data</span>}
+                {!isMobile && <span style={{ fontSize: 11, color: '#6478b5', fontFamily: 'monospace' }}>simulated · auth required for real data</span>}
               </div>
               <DailyCommitGraph year={graphYear} repoCount={repos.length} isMobile={isMobile} />
-              {isMobile && <div style={{ fontSize: 10, color: '#484f58', marginTop: 6, fontFamily: 'monospace' }}>simulated · auth required for real data</div>}
+              {isMobile && <div style={{ fontSize: 10, color: '#6478b5', marginTop: 6, fontFamily: 'monospace' }}>simulated · auth required for real data</div>}
             </div>
 
             {/* ── Year Filter ── */}
-            <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: isMobile ? '12px 10px' : '12px 14px', marginBottom: 14 }}>
-              <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: isMobile ? '12px 10px' : '12px 14px', marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: MUTED, marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Filter by Year
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 <button className={`yr-btn${!selectedYear ? ' active' : ''}`}
                   onClick={() => { setSelectedYear(null); setSelectedMonth(null); setPage(1); }}>
-                  All <span style={{ fontSize: 10, color: !selectedYear ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repos.length})</span>
+                  All <span style={{ fontSize: 10, color: !selectedYear ? 'rgba(255,255,255,.6)' : '#6478b5' }}>({repos.length})</span>
                 </button>
                 {years.map(y => (
                   <button key={y} className={`yr-btn${selectedYear === y ? ' active' : ''}`}
                     onClick={() => { setSelectedYear(y); setSelectedMonth(null); setPage(1); }}>
-                    {y} <span style={{ fontSize: 10, color: selectedYear === y ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repoCountByYear[y] || 0})</span>
+                    {y} <span style={{ fontSize: 10, color: selectedYear === y ? 'rgba(255,255,255,.6)' : '#6478b5' }}>({repoCountByYear[y] || 0})</span>
                   </button>
                 ))}
               </div>
 
               {selectedYear && monthsInYear.length > 0 && (
                 <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 11, color: '#8b949e', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: 11, color: MUTED, marginBottom: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Filter by Month — {selectedYear}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
@@ -629,7 +635,7 @@ export default function GitHubRepo() {
                     {monthsInYear.map(m => (
                       <button key={m} className={`mo-btn${selectedMonth === m ? ' active' : ''}`}
                         onClick={() => { setSelectedMonth(m); setPage(1); }}>
-                        {MONTHS_SHORT[m]} <span style={{ fontSize: 9, color: selectedMonth === m ? 'rgba(255,255,255,.6)' : '#484f58' }}>({repoCountByMonth[m] || 0})</span>
+                        {MONTHS_SHORT[m]} <span style={{ fontSize: 9, color: selectedMonth === m ? 'rgba(255,255,255,.6)' : '#6478b5' }}>({repoCountByMonth[m] || 0})</span>
                       </button>
                     ))}
                   </div>
@@ -641,10 +647,10 @@ export default function GitHubRepo() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 6 }}>
               <span style={{ fontSize: isMobile ? 13 : 14, fontWeight: 600 }}>
                 {selectedYear ? `${selectedYear}${selectedMonth !== null ? ` — ${MONTHS_SHORT[selectedMonth]}` : ''} Repos` : 'All Repositories'}
-                <span style={{ color: '#8b949e', fontWeight: 400, fontSize: 13 }}> ({filtered.length})</span>
+                <span style={{ color: MUTED, fontWeight: 400, fontSize: 13 }}> ({filtered.length})</span>
               </span>
-              <span style={{ fontSize: 12, color: '#8b949e' }}>
-                Page <strong style={{ color: '#e6edf3' }}>{safePage}</strong> / <strong style={{ color: '#e6edf3' }}>{totalPages}</strong>
+              <span style={{ fontSize: 12, color: MUTED }}>
+                Page <strong style={{ color: TEXT }}>{safePage}</strong> / <strong style={{ color: TEXT }}>{totalPages}</strong>
               </span>
             </div>
 
@@ -653,7 +659,7 @@ export default function GitHubRepo() {
               {currentRepos.length > 0
                 ? currentRepos.map(r => <RepoCard key={r.id} repo={r} isMobile={isMobile} />)
                 : (
-                  <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 10, padding: 24, textAlign: 'center', color: '#8b949e', fontSize: 13 }}>
+                  <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 10, padding: 24, textAlign: 'center', color: MUTED, fontSize: 13 }}>
                     No repositories found for this filter.
                   </div>
                 )}
@@ -670,7 +676,7 @@ export default function GitHubRepo() {
                   const show = n === 1 || n === totalPages || (n >= safePage - 1 && n <= safePage + 1);
                   const ell = (n === 2 && safePage > 3) || (n === totalPages - 1 && safePage < totalPages - 2);
                   if (!show && !ell) return null;
-                  if (ell && !show) return <span key={n} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#484f58' }}>…</span>;
+                  if (ell && !show) return <span key={n} style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6478b5' }}>…</span>;
                   return (
                     <button key={n} className={`pg-num${safePage === n ? ' active' : ''}`} onClick={() => paginate(n)}>{n}</button>
                   );
