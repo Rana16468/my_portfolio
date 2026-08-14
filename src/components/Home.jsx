@@ -8,7 +8,7 @@ const skillCategories = {
   database: ["PostgreSQL", "MongoDB", "MySQL", "Firebase"],
   mobile: ["React Native"],
   testing: ["Mocha", "Chai"],
-  hosting: ["AWS", "Vercel", "Netlify", "Firebase", "Namecheap"],
+  hosting: ["AWS", "Vercel", "Netlify", "Firebase", "Namecheap",  "Hostinger",  "Render", "Railway"],
 };
 
 const highlightedSkills = ["React", "Next.js", "Node.js", "NestJS", "React Native", "TypeScript"];
